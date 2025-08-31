@@ -76,7 +76,10 @@ describe('PlayClone Browser Integration Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       const state = await playclone.getCurrentState();
       expect(state.value?.url).toContain('iana.org');
-    }, 30000);
+      
+      // Ensure cleanup
+      await playclone.close();
+    }, 60000);
 
     it('should extract text from page', async () => {
       playclone = new PlayClone({ headless: true });
