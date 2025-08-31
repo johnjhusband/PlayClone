@@ -21,6 +21,7 @@ All development tasks have been successfully completed. PlayClone is production-
   - `ci.yml` - Continuous Integration pipeline (3621 bytes)
   - `nightly.yml` - Nightly test automation (5739 bytes)
   - `release.yml` - NPM release workflow (8022 bytes)
+- **Helper Script**: Run `./upload-workflows.sh` for detailed upload instructions
 - **Action Required**: Repository owner must manually upload these files via:
   - GitHub web interface (drag & drop to `.github/workflows/`)
   - Or using proper credentials with workflow permissions
