@@ -26,5 +26,8 @@ export { TimeoutManager, AdaptiveTimeout, withTimeout, DEFAULT_TIMEOUTS } from '
 export { BrowserRecoveryManager, CrashDetector, RecoveryStrategies } from './utils/recovery';
 export { AIErrorReporter, ErrorPatternMatcher, type AIErrorReport } from './utils/errorReporter';
 
+// Export optimization utilities
+export { BrowserPrewarmer, getGlobalPrewarmer, startGlobalPrewarming, stopGlobalPrewarming } from './optimization/BrowserPrewarmer';
+
 // Re-export PlayCloneOptions from types
 export type { LaunchOptions as PlayCloneOptions } from './types';

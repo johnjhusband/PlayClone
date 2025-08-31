@@ -475,11 +475,11 @@ PLAYCLONE_HEADLESS=true node mcp-server-v2.cjs
 - [x] Remove obsolete checkpoint files (73 files deleted)
 - [x] Remove ralph automation scripts (7 scripts deleted)  
 - [x] Stage all recent enhancements for commit
-- [ ] Create release tag v1.1.0 with latest improvements
+- [x] Create release tag v1.1.0 with latest improvements (2025-01-02)
 
 ### Performance Optimizations
-- [ ] Investigate browser startup time reduction (currently ~2-3 seconds)
-- [ ] Implement browser instance pre-warming for faster first response
+- [x] Investigate browser startup time reduction (currently ~2-3 seconds) - Created BrowserPrewarmer class
+- [x] Implement browser instance pre-warming for faster first response - Pre-warming with pooling implemented
 - [ ] Add connection pooling size configuration
 - [ ] Profile memory usage under heavy load
 
