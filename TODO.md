@@ -12,10 +12,19 @@ All development tasks have been successfully completed. PlayClone is production-
 - **Project Verified**: 2025-08-31 - Core functionality tested and working
 - **Repository Status**: 2025-08-31 - Fully synchronized with GitHub
 - **Demo Verification**: 2025-08-31 - Quick demo confirms all features working
-- **Note**: GitHub Actions workflows created in .github/workflows/ directory
-  - ⚠️ **IMPORTANT**: Workflows cannot be pushed via OAuth due to GitHub security restrictions
-  - 📁 **Files ready for manual upload**: ci.yml, nightly.yml, release.yml
-  - 🔧 **To deploy**: Copy .github/workflows/ directory contents via GitHub web interface or with proper credentials
+
+### ⚠️ GitHub Actions Workflows - Manual Upload Required
+- **Status**: Workflows created but cannot be pushed via OAuth (confirmed 2025-08-31)
+- **Location**: `.github/workflows/` directory (untracked in git)
+- **Files**: 
+  - `ci.yml` - Continuous Integration pipeline (3621 bytes)
+  - `nightly.yml` - Nightly test automation (5739 bytes)
+  - `release.yml` - NPM release workflow (8022 bytes)
+- **Action Required**: Repository owner must manually upload these files via:
+  - GitHub web interface (drag & drop to `.github/workflows/`)
+  - Or using proper credentials with workflow permissions
+- **OAuth Error**: "refusing to allow an OAuth App to create or update workflow without `workflow` scope"
+- **Last Verified**: 2025-08-31 - Push attempt confirmed OAuth restriction
 
 All phases completed successfully! PlayClone is production-ready with:
 - ✅ 100% core functionality implemented
