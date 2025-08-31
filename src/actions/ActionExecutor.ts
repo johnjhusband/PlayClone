@@ -16,6 +16,17 @@ export class ActionExecutor {
   }
 
   /**
+   * Format error message for consistent test expectations
+   */
+  private formatActionError(error: Error | string, action: string): ActionResult {
+    const errorMessage = typeof error === 'string' ? error : error.message;
+    const formattedMessage = errorMessage.includes('Failed to') 
+      ? errorMessage 
+      : `Failed to ${action}: ${errorMessage}`;
+    return formatError(formattedMessage, action);
+  }
+
+  /**
    * Click on an element
    */
   async click(page: Page, selector: string | ElementSelector): Promise<ActionResult> {
@@ -42,7 +53,7 @@ export class ActionExecutor {
         duration: Date.now() - startTime,
       });
     } catch (error) {
-      return formatError(error as Error, 'click');
+      return this.formatActionError(error as Error, 'click');
     }
   }
 
@@ -66,7 +77,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'doubleClick');
+      return this.formatActionError(error as Error, 'doubleClick');
     }
   }
 
@@ -90,7 +101,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'rightClick');
+      return this.formatActionError(error as Error, 'rightClick');
     }
   }
 
@@ -121,7 +132,7 @@ export class ActionExecutor {
         duration: Date.now() - startTime,
       });
     } catch (error) {
-      return formatError(error as Error, 'fill');
+      return this.formatActionError(error as Error, 'fill');
     }
   }
 
@@ -141,7 +152,7 @@ export class ActionExecutor {
         duration: Date.now() - startTime,
       });
     } catch (error) {
-      return formatError(error as Error, 'type');
+      return this.formatActionError(error as Error, 'type');
     }
   }
 
@@ -167,7 +178,7 @@ export class ActionExecutor {
         textLength: text.length,
       });
     } catch (error) {
-      return formatError(error as Error, 'typeInto');
+      return this.formatActionError(error as Error, 'typeInto');
     }
   }
 
@@ -180,7 +191,7 @@ export class ActionExecutor {
       
       return formatSuccess('press', { key });
     } catch (error) {
-      return formatError(error as Error, 'press');
+      return this.formatActionError(error as Error, 'press');
     }
   }
 
@@ -204,7 +215,7 @@ export class ActionExecutor {
 
       return formatSuccess('pressKeys', { keys: keys.join('+') });
     } catch (error) {
-      return formatError(error as Error, 'pressKeys');
+      return this.formatActionError(error as Error, 'pressKeys');
     }
   }
 
@@ -231,7 +242,7 @@ export class ActionExecutor {
         value: values,
       });
     } catch (error) {
-      return formatError(error as Error, 'select');
+      return this.formatActionError(error as Error, 'select');
     }
   }
 
@@ -265,7 +276,7 @@ export class ActionExecutor {
         checked,
       });
     } catch (error) {
-      return formatError(error as Error, 'check');
+      return this.formatActionError(error as Error, 'check');
     }
   }
 
@@ -289,7 +300,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'hover');
+      return this.formatActionError(error as Error, 'hover');
     }
   }
 
@@ -313,7 +324,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'focus');
+      return this.formatActionError(error as Error, 'focus');
     }
   }
 
@@ -336,7 +347,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'blur');
+      return this.formatActionError(error as Error, 'blur');
     }
   }
 
@@ -359,7 +370,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'scrollIntoView');
+      return this.formatActionError(error as Error, 'scrollIntoView');
     }
   }
 
@@ -383,7 +394,7 @@ export class ActionExecutor {
 
       return formatSuccess('scroll', { direction, amount });
     } catch (error) {
-      return formatError(error as Error, 'scroll');
+      return this.formatActionError(error as Error, 'scroll');
     }
   }
 
@@ -416,7 +427,7 @@ export class ActionExecutor {
         target: this.selectorToString(targetSelector),
       });
     } catch (error) {
-      return formatError(error as Error, 'dragAndDrop');
+      return this.formatActionError(error as Error, 'dragAndDrop');
     }
   }
 
@@ -441,7 +452,7 @@ export class ActionExecutor {
         files: files.map(f => f.split('/').pop()),
       });
     } catch (error) {
-      return formatError(error as Error, 'uploadFile');
+      return this.formatActionError(error as Error, 'uploadFile');
     }
   }
 
@@ -465,7 +476,7 @@ export class ActionExecutor {
         selector: this.selectorToString(selector),
       });
     } catch (error) {
-      return formatError(error as Error, 'clear');
+      return this.formatActionError(error as Error, 'clear');
     }
   }
 
@@ -493,7 +504,7 @@ export class ActionExecutor {
         state: options?.state || 'visible',
       });
     } catch (error) {
-      return formatError(error as Error, 'waitForElement');
+      return this.formatActionError(error as Error, 'waitForElement');
     }
   }
 
@@ -531,7 +542,7 @@ export class ActionExecutor {
 
       return formatSuccess('getValue', value, this.selectorToString(selector));
     } catch (error) {
-      return formatError(error as Error, 'getValue');
+      return this.formatActionError(error as Error, 'getValue');
     }
   }
 

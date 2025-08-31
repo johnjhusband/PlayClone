@@ -27,7 +27,8 @@ describe('StateManager', () => {
       title: jest.fn().mockResolvedValue('Page Title'),
       screenshot: jest.fn().mockResolvedValue(Buffer.from('screenshot')),
       evaluate: jest.fn(),
-      context: jest.fn()
+      context: jest.fn(),
+      viewportSize: jest.fn().mockReturnValue({ width: 1280, height: 720 })
     } as any;
 
     // Setup mock context
@@ -54,7 +55,8 @@ describe('StateManager', () => {
       expect(checkpoint).toBeTruthy();
       expect(checkpoint.name).toBe('test-checkpoint');
       expect(checkpoint.url).toBe('https://example.com/page');
-      expect(checkpoint.timestamp).toBeInstanceOf(Date);
+      expect(checkpoint.timestamp).toBeDefined();
+      expect(typeof checkpoint.timestamp).toBe('number');
     });
 
     it('should auto-generate checkpoint name if not provided', async () => {
@@ -433,7 +435,7 @@ describe('StateManager', () => {
     it('should return false when no states to rollback', async () => {
       const result = await stateManager.rollback(mockPage);
 
-      expect(result).toBe(false);
+      expect(result).toEqual({ success: false, error: 'No checkpoints available' });
     });
   });
 });

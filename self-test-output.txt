@@ -1,0 +1,123 @@
+
+> playclone@0.1.0 self-test
+> tsc examples/playclone-self-test.ts --outDir temp-test --module commonjs --target ES2022 && node temp-test/examples/playclone-self-test.js && rm -rf temp-test
+
+
+[36m============================================================[0m
+[1m[36m🚀 PLAYCLONE SELF-TEST SUITE STARTING[0m
+[36m============================================================[0m
+
+[34mℹ️  Creating PlayClone instance...[0m
+
+[36m============================================================[0m
+[1m[36mTEST 1: NAVIGATION USING PLAYCLONE[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone navigating to example.com...[0m
+[32m✅ Navigation successful! URL: https://example.com/[0m
+[32m✅ Response size: 172 bytes (AI-optimized ✨)[0m
+
+[36m============================================================[0m
+[1m[36mTEST 2: NATURAL LANGUAGE CLICK[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone clicking "More information" using natural language...[0m
+[32m✅ Click successful using natural language![0m
+[32m✅ Response size: 120 bytes[0m
+[32m✅ Navigation after click confirmed![0m
+
+[36m============================================================[0m
+[1m[36mTEST 3: BROWSER NAVIGATION CONTROLS[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone going back...[0m
+[32m✅ Back navigation successful![0m
+
+[36m============================================================[0m
+[1m[36mTEST 4: DATA EXTRACTION[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone extracting text from page...[0m
+[32m✅ Text extraction successful![0m
+[32m✅ Found text: "Example Domain This domain is for use in illustrat..."[0m
+[32m✅ Response size: 319 bytes[0m
+
+[36m============================================================[0m
+[1m[36mTEST 5: LINK DISCOVERY[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone finding all links...[0m
+[32m✅ Found 1 links![0m
+[34mℹ️    - More information...: https://www.iana.org/domains/example[0m
+[32m✅ Response size: 227 bytes[0m
+
+[36m============================================================[0m
+[1m[36mTEST 6: FORM FILLING[0m
+[36m============================================================[0m
+
+[34mℹ️  Navigating to Google for form test...[0m
+[34mℹ️  PlayClone filling search form using natural language...[0m
+[32m✅ Form filling successful![0m
+[32m✅ Response size: 146 bytes[0m
+
+[36m============================================================[0m
+[1m[36mTEST 7: SCREENSHOT CAPTURE[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone taking screenshot...[0m
+[32m✅ Screenshot captured![0m
+[32m✅ Image data size: 76904 bytes (base64)[0m
+[32m✅ Metadata size: 137 bytes[0m
+[34mℹ️  Screenshot saved to: /home/john/repos/PlayClone/playclone-self-test-screenshot.png[0m
+
+[36m============================================================[0m
+[1m[36mTEST 8: STATE MANAGEMENT[0m
+[36m============================================================[0m
+
+[34mℹ️  PlayClone saving current state...[0m
+[32m✅ State saved successfully![0m
+[34mℹ️  Navigating to different page...[0m
+[34mℹ️  PlayClone restoring saved state...[0m
+[32m✅ State restored successfully![0m
+[32m✅ State restoration verified - back at Google![0m
+
+[36m============================================================[0m
+[1m[36mTEST 9: COMPLEX ELEMENT SELECTION[0m
+[36m============================================================[0m
+
+[34mℹ️  Testing various natural language selectors...[0m
+[32m✅ Found element: "main heading" → "More information......"[0m
+[32m✅ Found element: "first paragraph" → "More information......"[0m
+[32m✅ Found element: "link with more information" → "More information......"[0m
+
+[36m============================================================[0m
+[1m[36mTEST 10: AI OPTIMIZATION VERIFICATION[0m
+[36m============================================================[0m
+
+[34mℹ️  Analyzing response sizes for AI optimization...[0m
+[35m📊 Performance Metrics:[0m
+[33m  Average response size: 102 bytes[0m
+[33m  Maximum response size: 319 bytes[0m
+[33m  Target size: <1024 bytes[0m
+[32m✅ ✨ Responses are AI-optimized! Average < 1KB[0m
+
+[36m============================================================[0m
+[1m[36mCLEANUP[0m
+[36m============================================================[0m
+
+[34mℹ️  Closing browser...[0m
+[32m✅ Browser closed[0m
+
+[36m============================================================[0m
+[1m[36m📊 FINAL TEST REPORT[0m
+[36m============================================================[0m
+
+[1mTests Run: 12[0m
+[32mTests Passed: 12[0m
+[32mTests Failed: 0[0m
+[32mPass Rate: 100%[0m
+
+[1m[32m🎉 PERFECT SCORE! PlayClone successfully tested itself![0m
+[1m[32m🤖 Meta-testing complete: PlayClone is production ready![0m
+
+[34mℹ️  This was PlayClone testing PlayClone - the ultimate dogfooding![0m

@@ -28,7 +28,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "demo": "tsx demo.ts",
-    "self-test": "tsx examples/playclone-self-test.ts",
+    "self-test": "tsc examples/playclone-self-test.ts --outDir temp-test --module commonjs --target ES2022 && node temp-test/examples/playclone-self-test.js && rm -rf temp-test",
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "keywords": [

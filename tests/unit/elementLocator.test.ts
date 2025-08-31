@@ -5,18 +5,56 @@ import { Page, Locator } from 'playwright-core';
 // Mock ElementNormalizer
 jest.mock('../../src/selectors/ElementNormalizer', () => ({
   ElementNormalizer: jest.fn().mockImplementation(() => ({
-    normalize: jest.fn((desc) => ({
-      text: desc,
-      type: 'button',
-      attributes: {},
-      position: null,
-      action: null
-    })),
-    toSelectorHints: jest.fn((normalized) => ({
-      text: normalized.text || '',
-      type: normalized.type || 'button',
-      attributes: normalized.attributes || {}
-    }))
+    normalize: jest.fn((desc) => {
+      // Parse the description to extract text and type
+      const parts = desc.toLowerCase().split(' ');
+      
+      // Check for position modifiers
+      let position = null;
+      let type = parts[parts.length - 1];
+      let text = parts.slice(0, -1).join(' ');
+      
+      if (parts[0] === 'first') {
+        position = 'first';
+        text = parts.slice(1, -1).join(' ');
+      } else if (parts[0] === 'last') {
+        position = 'last';
+        text = parts.slice(1, -1).join(' ');
+      } else if (parts[0] === 'second') {
+        position = 2;
+        text = parts.slice(1, -1).join(' ');
+      }
+      
+      if (!text) text = type; // If no text, use the type as text
+      
+      return {
+        text: text,
+        type: type,
+        normalized: desc,
+        attributes: {},
+        position: position,
+        action: null
+      };
+    }),
+    toSelectorHints: jest.fn((normalized) => {
+      const hints: any = {
+        text: normalized.text || '',
+        role: normalized.type || 'button', // Use 'role' instead of 'type'
+        attributes: normalized.attributes || {}
+      };
+      
+      // Add modifiers based on position
+      if (normalized.position) {
+        hints.modifiers = [];
+        if (normalized.position === 'first') hints.modifiers.push(':first');
+        else if (normalized.position === 'last') hints.modifiers.push(':last');
+        else if (typeof normalized.position === 'number') {
+          hints.modifiers.push(`:nth(${normalized.position})`);
+        }
+      }
+      
+      return hints;
+    })
   }))
 }));
 

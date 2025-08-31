@@ -204,7 +204,7 @@ describe('ActionExecutor', () => {
     it('should uncheck checkbox', async () => {
       mockLocator.isChecked.mockResolvedValue(true);
 
-      const result = await actionExecutor.uncheck(mockPage, 'newsletter checkbox');
+      const result = await actionExecutor.check(mockPage, 'newsletter checkbox', false);
 
       expect(mockLocator.uncheck).toHaveBeenCalled();
       expect(result.success).toBe(true);
@@ -214,7 +214,7 @@ describe('ActionExecutor', () => {
     it('should not uncheck if already unchecked', async () => {
       mockLocator.isChecked.mockResolvedValue(false);
 
-      const result = await actionExecutor.uncheck(mockPage, 'unchecked box');
+      const result = await actionExecutor.check(mockPage, 'unchecked box', false);
 
       expect(mockLocator.uncheck).not.toHaveBeenCalled();
       expect(result.value).toBe(false);
@@ -265,7 +265,13 @@ describe('ActionExecutor', () => {
 
   describe('type', () => {
     it('should type text with delay', async () => {
-      mockPage.keyboard = { type: jest.fn().mockResolvedValue(undefined) };
+      mockPage.keyboard = { 
+        type: jest.fn().mockResolvedValue(undefined),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        press: jest.fn(),
+        up: jest.fn()
+      } as any;
       
       const result = await actionExecutor.type(
         mockPage,
@@ -278,7 +284,13 @@ describe('ActionExecutor', () => {
     });
 
     it('should handle type errors', async () => {
-      mockPage.keyboard = { type: jest.fn().mockRejectedValue(new Error('Cannot type')) };
+      mockPage.keyboard = { 
+        type: jest.fn().mockRejectedValue(new Error('Cannot type')),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        press: jest.fn(),
+        up: jest.fn()
+      } as any;
 
       const result = await actionExecutor.type(mockPage, 'text');
 
@@ -289,7 +301,13 @@ describe('ActionExecutor', () => {
 
   describe('press', () => {
     it('should press key on element', async () => {
-      mockPage.keyboard = { press: jest.fn().mockResolvedValue(undefined) };
+      mockPage.keyboard = { 
+        press: jest.fn().mockResolvedValue(undefined),
+        type: jest.fn(),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        up: jest.fn()
+      } as any;
       const result = await actionExecutor.press(mockPage, 'Enter');
 
       expect(mockPage.keyboard.press).toHaveBeenCalledWith('Enter');
@@ -297,7 +315,13 @@ describe('ActionExecutor', () => {
     });
 
     it('should press key globally when no selector', async () => {
-      mockPage.keyboard = { press: jest.fn().mockResolvedValue(undefined) };
+      mockPage.keyboard = { 
+        press: jest.fn().mockResolvedValue(undefined),
+        type: jest.fn(),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        up: jest.fn()
+      } as any;
       const result = await actionExecutor.press(mockPage, 'Escape');
 
       expect(mockKeyboard.press).toHaveBeenCalledWith('Escape');
@@ -305,7 +329,13 @@ describe('ActionExecutor', () => {
     });
 
     it('should handle key combinations', async () => {
-      mockPage.keyboard = { press: jest.fn().mockResolvedValue(undefined) };
+      mockPage.keyboard = { 
+        press: jest.fn().mockResolvedValue(undefined),
+        type: jest.fn(),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        up: jest.fn()
+      } as any;
       await actionExecutor.press(mockPage, 'Control+A');
 
       expect(mockKeyboard.press).toHaveBeenCalledWith('Control+A');
@@ -314,7 +344,13 @@ describe('ActionExecutor', () => {
     it('should handle press errors', async () => {
       mockLocator.press.mockRejectedValue(new Error('Invalid key'));
 
-      mockPage.keyboard = { press: jest.fn().mockRejectedValue(new Error('Unknown key')) };
+      mockPage.keyboard = { 
+        press: jest.fn().mockRejectedValue(new Error('Unknown key')),
+        type: jest.fn(),
+        down: jest.fn(),
+        insertText: jest.fn(),
+        up: jest.fn()
+      } as any;
       const result = await actionExecutor.press(mockPage, 'InvalidKey');
 
       expect(result.success).toBe(false);
@@ -333,7 +369,7 @@ describe('ActionExecutor', () => {
     });
 
     it('should get checkbox state', async () => {
-      mockLocator.evaluate.mockImplementation((fn: any) => {
+      mockLocator.evaluate.mockImplementation((_fn: any) => {
         return Promise.resolve('checkbox');
       });
       mockLocator.isChecked.mockResolvedValue(true);

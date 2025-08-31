@@ -121,7 +121,11 @@ runner.add('Fill form fields', async () => {
     
     // Verify form data
     const formData = await pc.getFormData();
-    if (!formData.data.forms[0].fields.find(f => f.name === 'username' && f.value === 'testuser')) {
+    if (!formData.data || !formData.data.forms || formData.data.forms.length === 0) {
+      throw new Error('No forms found');
+    }
+    const fields = formData.data.forms[0].fields;
+    if (!fields || fields.username !== 'testuser') {
       throw new Error('Form data not properly filled');
     }
   } finally {
@@ -172,10 +176,19 @@ runner.add('Extract links from page', async () => {
     const result = await pc.getLinks();
     if (!result.data) throw new Error('No links data');
     
-    const allLinks = [...(result.data.internal || []), ...(result.data.external || [])];
+    // Handle both array format and object format for backward compatibility
+    let allLinks;
+    if (Array.isArray(result.data)) {
+      allLinks = result.data;
+    } else if (result.data.internal || result.data.external) {
+      allLinks = [...(result.data.internal || []), ...(result.data.external || [])];
+    } else {
+      allLinks = [];
+    }
+    
     if (allLinks.length === 0) throw new Error('No links found');
     
-    const moreInfoLink = allLinks.find(l => l.text.includes('More information'));
+    const moreInfoLink = allLinks.find(l => l.text && l.text.includes('More information'));
     if (!moreInfoLink) throw new Error('Expected link not found');
   } finally {
     await pc.close();

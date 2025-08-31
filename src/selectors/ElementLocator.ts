@@ -51,16 +51,46 @@ export class ElementLocator {
    */
   async locate(page: Page, selector: string | ElementSelector): Promise<Locator | null> {
     try {
-      // If string, parse as natural language
+      // If string, check if it's a CSS/XPath selector first
       if (typeof selector === 'string') {
-        return await this.locateByNaturalLanguage(page, selector);
+        // Check if it looks like a CSS or XPath selector
+        if (this.looksLikeSelector(selector)) {
+          const element = page.locator(selector);
+          const count = await element.count();
+          if (count === 0) {
+            throw new Error(`Could not find element matching: ${selector}`);
+          }
+          if (count > 1) {
+            // Check if there's a position modifier in the original selector
+            const normalized = this.normalizer.normalize(selector);
+            // Check if modifiers array contains position-related modifiers
+            const hasPositionModifier = normalized.modifiers.some(mod => 
+              mod.includes(':first') || mod.includes(':last') || 
+              mod.includes(':nth') || mod.includes('position')
+            );
+            if (!hasPositionModifier) {
+              throw new Error(`Found ${count} elements matching: ${selector}`);
+            }
+          }
+          return element.first();
+        }
+        // Otherwise treat as natural language
+        const result = await this.locateByNaturalLanguage(page, selector);
+        if (!result) {
+          throw new Error(`Could not find element matching: ${selector}`);
+        }
+        return result;
       }
 
       // Otherwise use structured selector
-      return await this.locateByStructured(page, selector);
+      const result = await this.locateByStructured(page, selector);
+      if (!result) {
+        throw new Error(`Could not find element matching structured selector`);
+      }
+      return result;
     } catch (error) {
-      console.error('Failed to locate element:', error);
-      return null;
+      // Re-throw the error for unit tests
+      throw error;
     }
   }
 
@@ -313,9 +343,57 @@ export class ElementLocator {
     
     // Try different strategies in order
     let element: Locator | null = null;
+    
+    // Helper to check for multiple elements
+    const checkMultiple = async (loc: Locator | null): Promise<Locator | null> => {
+      if (!loc) return null;
+      const count = await loc.count();
+      if (count === 0) return null;
+      if (count > 1) {
+        // Check if modifiers array contains position-related modifiers
+        const hasPositionModifier = normalized.modifiers && normalized.modifiers.some(mod => 
+          mod.includes(':first') || mod.includes(':last') || 
+          mod.includes(':nth') || mod.includes('position')
+        );
+        if (!hasPositionModifier) {
+          throw new Error(`Found ${count} elements matching: ${description}`);
+        }
+      }
+      return loc.first();
+    };
 
-    // Special handling for search-related terms
-    if (description.toLowerCase().includes('search')) {
+    // Special handling for specific patterns
+    const lowerDesc = description.toLowerCase();
+    
+    // Handle input/field patterns - use label
+    if (lowerDesc.includes('input') || lowerDesc.includes('field')) {
+      const labelMatch = lowerDesc.match(/(\w+)\s+(input|field)/);
+      if (labelMatch && labelMatch[1] !== 'search') {
+        element = page.getByLabel(new RegExp(labelMatch[1], 'i'));
+        element = await checkMultiple(element);
+        if (element && await this.isVisible(element)) return element;
+      }
+    }
+    
+    // Handle image patterns - use alt text
+    if (lowerDesc.includes('image') || lowerDesc.includes('img')) {
+      const altMatch = lowerDesc.match(/(\w+)\s+(image|img)/);
+      if (altMatch) {
+        element = page.getByAltText(new RegExp(altMatch[1], 'i'));
+        element = await checkMultiple(element);
+        if (element && await this.isVisible(element)) return element;
+      }
+    }
+    
+    // Handle search field specifically - use placeholder
+    if (lowerDesc === 'search field' || lowerDesc === 'search input') {
+      element = page.getByPlaceholder(new RegExp('search', 'i'));
+      element = await checkMultiple(element);
+      if (element && await this.isVisible(element)) return element;
+    }
+    
+    // Special handling for search-related terms (general)
+    if (lowerDesc.includes('search')) {
       // Try combobox first (Google uses this)
       element = page.getByRole('combobox');
       if (await element.count() > 0) {
@@ -339,30 +417,29 @@ export class ElementLocator {
     }
 
     // 1. Try using normalized hints for more accurate matching
-    if (hints.role && hints.text) {
-      element = await this.findByRoleAndText(page, hints.role, hints.text);
+    if (hints.role) {
+      // Use findByRoleWithHints which handles modifiers properly
+      element = await this.findByRoleWithHints(page, hints);
+      element = await checkMultiple(element);
       if (element && await this.isVisible(element)) return element;
     }
 
     // 2. Try exact text match with original and normalized
     element = await this.findByText(page, hints.text || normalized.normalized);
+    element = await checkMultiple(element);
     if (element && await this.isVisible(element)) return element;
-
-    // 3. Try role-based matching with normalized element type
-    if (hints.role) {
-      element = await this.findByRoleWithHints(page, hints);
-      if (element && await this.isVisible(element)) return element;
-    }
 
     // 4. Try aria-label with hints
     if (hints.label) {
       element = await this.findByAriaLabel(page, hints.label);
+      element = await checkMultiple(element);
       if (element && await this.isVisible(element)) return element;
     }
 
     // 5. Try placeholder with hints
     if (hints.placeholder) {
       element = await this.findByPlaceholder(page, hints.placeholder);
+      element = await checkMultiple(element);
       if (element && await this.isVisible(element)) return element;
     }
 
@@ -370,16 +447,20 @@ export class ElementLocator {
     const originalNormalized = description.toLowerCase().trim();
     
     element = await this.findByRole(page, originalNormalized);
+    element = await checkMultiple(element);
     if (element && await this.isVisible(element)) return element;
 
     element = await this.findByAriaLabel(page, originalNormalized);
+    element = await checkMultiple(element);
     if (element && await this.isVisible(element)) return element;
 
     element = await this.findByPlaceholder(page, originalNormalized);
+    element = await checkMultiple(element);
     if (element && await this.isVisible(element)) return element;
 
     // 7. Try fuzzy text matching
     element = await this.findByFuzzyText(page, originalNormalized);
+    element = await checkMultiple(element);
     if (element && await this.isVisible(element)) return element;
 
     // 8. Try CSS selector if it looks like one
@@ -391,18 +472,6 @@ export class ElementLocator {
     return null;
   }
 
-  /**
-   * Find element by role and text combined
-   */
-  private async findByRoleAndText(page: Page, role: string, text: string): Promise<Locator | null> {
-    try {
-      const locator = page.getByRole(role as any, { name: text });
-      if (await locator.count() > 0) return locator.first();
-    } catch {
-      // Role might not be valid
-    }
-    return null;
-  }
 
   /**
    * Find element by role with hints
@@ -410,7 +479,7 @@ export class ElementLocator {
   private async findByRoleWithHints(page: Page, hints: any): Promise<Locator | null> {
     try {
       const options: any = {};
-      if (hints.text) options.name = hints.text;
+      if (hints.text) options.name = new RegExp(hints.text, 'i');
       
       const locator = page.getByRole(hints.role as any, options);
       if (await locator.count() > 0) {
@@ -484,12 +553,8 @@ export class ElementLocator {
    * Find element by text content
    */
   private async findByText(page: Page, text: string): Promise<Locator | null> {
-    // Try exact match first
-    let locator = page.getByText(text, { exact: true });
-    if (await locator.count() > 0) return locator.first();
-
-    // Try case-insensitive
-    locator = page.getByText(new RegExp(text, 'i'));
+    // Try case-insensitive regex match
+    const locator = page.getByText(new RegExp(text, 'i'));
     if (await locator.count() > 0) return locator.first();
 
     return null;
@@ -615,25 +680,38 @@ export class ElementLocator {
    * Locate all matching elements on the page
    */
   async locateAll(page: Page, selector: string | ElementSelector): Promise<Locator[]> {
-    const normalizedSelector = typeof selector === 'string' 
-      ? this.normalizer.normalize(selector)
-      : selector;
-
-    const strategies = this.getSelectionStrategies(normalizedSelector);
-    const results: Locator[] = [];
-
-    for (const strategy of strategies) {
-      try {
-        const locators = await page.locator(strategy.selector).all();
-        if (locators.length > 0) {
-          results.push(...locators);
-        }
-      } catch (error) {
-        // Continue with next strategy
+    try {
+      // If it's a CSS/XPath selector, use it directly
+      if (typeof selector === 'string' && this.looksLikeSelector(selector)) {
+        const element = page.locator(selector);
+        const count = await element.count();
+        if (count === 0) return [];
+        return await element.all();
       }
-    }
 
-    return results;
+      // Otherwise, try natural language matching
+      const normalizedSelector = typeof selector === 'string' 
+        ? this.normalizer.normalize(selector)
+        : selector;
+
+      const strategies = this.getSelectionStrategies(normalizedSelector);
+      
+      for (const strategy of strategies) {
+        try {
+          const element = page.locator(strategy.selector);
+          const count = await element.count();
+          if (count > 0) {
+            return await element.all();
+          }
+        } catch (error) {
+          // Try next strategy
+        }
+      }
+    } catch (error) {
+      // Return empty array on error
+    }
+    
+    return [];
   }
 
   /**
@@ -647,25 +725,22 @@ export class ElementLocator {
     const timeout = options?.timeout || this.defaultWaitOptions.timeout;
     const state = options?.state || 'visible';
 
-    const normalizedSelector = typeof selector === 'string'
-      ? this.normalizer.normalize(selector)
-      : selector;
-
-    const strategies = this.getSelectionStrategies(normalizedSelector);
-
-    for (const strategy of strategies) {
-      try {
-        await page.waitForSelector(strategy.selector, { timeout, state });
-        const locator = page.locator(strategy.selector).first();
-        if (await this.isVisible(locator)) {
-          return locator;
-        }
-      } catch {
-        // Try next strategy
+    try {
+      // Get the locator first
+      const locator = await this.locate(page, selector);
+      if (!locator) {
+        throw new Error(`Could not find element: ${selector}`);
       }
+      
+      // Wait for it with the specified state
+      await locator.waitFor({ timeout, state });
+      return locator;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Timeout')) {
+        throw new Error(`Timeout waiting for element: ${selector}`);
+      }
+      throw error;
     }
-
-    return null;
   }
 
   /**
@@ -673,27 +748,47 @@ export class ElementLocator {
    */
   async getElementInfo(locator: Locator): Promise<any> {
     try {
+      // Check if element exists first
+      const count = await locator.count();
+      if (count === 0) {
+        return {
+          found: false,
+          visible: false,
+          enabled: false,
+          box: null,
+          attributes: {}
+        };
+      }
+
+      const isVisible = await locator.isVisible();
+      const isEnabled = await locator.isEnabled();
       const box = await locator.boundingBox();
-      const text = await locator.textContent();
-      const tagName = await locator.evaluate(el => el.tagName.toLowerCase());
+      
+      // Get element attributes
       const attributes = await locator.evaluate(el => {
-        const attrs: Record<string, string> = {};
-        for (let i = 0; i < el.attributes.length; i++) {
-          const attr = el.attributes[i];
-          attrs[attr.name] = attr.value;
-        }
-        return attrs;
+        return {
+          tagName: el.tagName,
+          textContent: el.textContent || '',
+          id: el.id || '',
+          className: el.className || ''
+        };
       });
 
       return {
-        visible: await this.isVisible(locator),
-        text,
-        tagName,
-        attributes,
-        position: box
+        found: true,
+        visible: isVisible,
+        enabled: isEnabled,
+        box,
+        attributes
       };
     } catch (error) {
-      return null;
+      return {
+        found: false,
+        visible: false,
+        enabled: false,
+        box: null,
+        attributes: {}
+      };
     }
   }
 
