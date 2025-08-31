@@ -354,19 +354,11 @@ export class PlayClone {
       };
     }
     const result = await this.dataExtractor.getText(page, selector);
-    // Extract text from the response - it's in the value property
+    // DataExtractor returns the text directly in result.value for getText
     let textData = null;
-    if (result.success && result.value) {
-      if (typeof result.value === 'string') {
-        textData = result.value;
-      } else if (result.value.text !== undefined) {
-        textData = result.value.text;
-      } else if (result.value.result && result.value.result.text !== undefined) {
-        textData = result.value.result.text;
-      } else {
-        // If none of the above, try to get any text-like field
-        textData = result.value.text || result.value.content || result.value.data || result.value;
-      }
+    if (result.success && result.value !== undefined) {
+      // DataExtractor.getText returns the text string directly as the value
+      textData = result.value;
     }
     
     return {
@@ -448,8 +440,12 @@ export class PlayClone {
     }
     // getLinks doesn't support filter parameter yet, so get all links
     const result = await this.dataExtractor.getLinks(page);
-    // Extract links data from the response - it's in the value property
-    const linksData = result.success && result.value ? result.value : null;
+    // DataExtractor.getLinks returns an object with { links, count, truncated } structure
+    let linksData = null;
+    if (result.success && result.value) {
+      // Extract the links array from the result
+      linksData = result.value.links || result.value;
+    }
     
     return {
       type: 'links',

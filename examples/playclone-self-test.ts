@@ -175,11 +175,16 @@ async function runSelfTests() {
     totalResponseSize += linksSize;
     maxResponseSize = Math.max(maxResponseSize, linksSize);
     
-    // The response has internal and external links
-    const allLinks = [
-      ...(linksResult.data?.internal || []),
-      ...(linksResult.data?.external || [])
-    ];
+    // The response may have internal/external links or just an array
+    let allLinks = [];
+    if (Array.isArray(linksResult.data)) {
+      allLinks = linksResult.data;
+    } else if (linksResult.data) {
+      allLinks = [
+        ...(linksResult.data.internal || []),
+        ...(linksResult.data.external || [])
+      ];
+    }
     
     if (allLinks.length > 0) {
       success(`Found ${allLinks.length} links!`);
