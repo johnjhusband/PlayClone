@@ -59,4 +59,7 @@ sessions/
 
 # Cache
 .cache/
-*.cachecheckpoints/
+*.cache
+
+# State checkpoints
+checkpoints/
