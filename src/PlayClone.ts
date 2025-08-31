@@ -11,6 +11,7 @@ import { DataExtractor } from './extractors/DataExtractor';
 import { StateManager } from './state/StateManager';
 import { formatResponse } from './utils/responseFormatter';
 import { LaunchOptions, ActionResult, ExtractedData, PageState } from './types';
+import { SearchEngineHandler } from './utils/searchEngineHandler';
 
 /**
  * Main PlayClone class - Provides AI-friendly browser automation
@@ -752,6 +753,57 @@ export class PlayClone {
       value: state,
       timestamp: Date.now()
     });
+  }
+
+  /**
+   * Perform a search on a search engine with anti-automation bypass
+   */
+  async search(query: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return formatResponse({
+        success: false,
+        action: 'search',
+        error: 'No active page',
+        timestamp: Date.now()
+      });
+    }
+    
+    const searchHandler = new SearchEngineHandler(page);
+    return await searchHandler.search(query);
+  }
+
+  /**
+   * Extract search results from current page
+   */
+  async getSearchResults(limit: number = 10): Promise<ExtractedData> {
+    await this.ensureInitialized();
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        type: 'search_results',
+        data: [],
+        metadata: {
+          url: '',
+          title: 'No active page',
+          timestamp: Date.now()
+        }
+      };
+    }
+    
+    const searchHandler = new SearchEngineHandler(page);
+    const results = await searchHandler.extractResults(limit);
+    
+    return {
+      type: 'search_results',
+      data: results,
+      metadata: {
+        url: page.url(),
+        title: await page.title(),
+        timestamp: Date.now()
+      }
+    };
   }
 
   /**

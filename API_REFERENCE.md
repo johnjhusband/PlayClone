@@ -349,6 +349,46 @@ await pc.waitFor('loading spinner to disappear');
 await pc.waitFor('success message', 5000);
 ```
 
+### `search(query: string): Promise<ActionResult>`
+Execute a search on the current page if it's a search engine.
+
+#### Parameters
+- `query: string` - The search query to execute
+
+#### Returns
+- `ActionResult` with search execution status
+
+#### Features
+- Automatic search engine detection (Google, DuckDuckGo, Bing)
+- Human-like typing delays to bypass anti-automation
+- Mouse movement simulation
+- Intelligent submit strategies (Enter key, button click, or both)
+- Site-specific timeout strategies
+
+#### Example
+```typescript
+await pc.navigate('https://google.com');
+const result = await pc.search('PlayClone browser automation');
+// Automatically types in search box and submits
+```
+
+### `getSearchResults(limit?: number): Promise<ExtractedData>`
+Extract search results from a search engine results page.
+
+#### Parameters
+- `limit?: number` - Maximum number of results to extract (default: 10)
+
+#### Returns
+- `ExtractedData` containing array of search results with title, URL, and snippet
+
+#### Example
+```typescript
+await pc.navigate('https://google.com');
+await pc.search('AI browser control');
+const results = await pc.getSearchResults(5);
+// Returns top 5 search results with title, URL, and description
+```
+
 ### `close(): Promise<void>`
 Close the browser and clean up resources.
 

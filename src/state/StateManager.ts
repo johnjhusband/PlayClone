@@ -58,15 +58,15 @@ export class StateManager {
       sessionStorage: options?.includeSessionStorage ? await page.evaluate(() => ({ ...sessionStorage })) : undefined,
       scrollPosition: { x: 0, y: 0 },
       viewportSize: page.viewportSize(),
-      timestamp: new Date()
+      timestamp: Date.now()
     };
 
     const checkpointName = name || `checkpoint-${Date.now()}`;
     const result = await this.saveCheckpoint(state, checkpointName, options);
     
-    if (result.success && result.data) {
+    if (result.success && (result as any).data) {
       return {
-        id: result.data.id,
+        id: (result as any).data.id,
         name: checkpointName,
         url: state.url,
         title: state.title,
@@ -94,7 +94,7 @@ export class StateManager {
     }
 
     if (checkpoint.localStorage) {
-      await page.evaluate((storage) => {
+      await page.evaluate((storage: any) => {
         Object.entries(storage).forEach(([key, value]) => {
           localStorage.setItem(key, value as string);
         });
@@ -102,7 +102,7 @@ export class StateManager {
     }
 
     if (checkpoint.sessionStorage) {
-      await page.evaluate((storage) => {
+      await page.evaluate((storage: any) => {
         Object.entries(storage).forEach(([key, value]) => {
           sessionStorage.setItem(key, value as string);
         });
@@ -110,7 +110,7 @@ export class StateManager {
     }
 
     if (checkpoint.scrollPosition) {
-      await page.evaluate((pos) => {
+      await page.evaluate((pos: any) => {
         window.scrollTo(pos.x, pos.y);
       }, checkpoint.scrollPosition);
     }
@@ -370,15 +370,19 @@ export class StateManager {
     }
 
     // Compare localStorage
-    const localStorageDiff = this.compareStorage(state1.localStorage, state2.localStorage);
-    if (localStorageDiff.added.length > 0 || localStorageDiff.removed.length > 0 || localStorageDiff.modified.length > 0) {
-      differences.localStorage = localStorageDiff;
+    if (state1.localStorage && state2.localStorage) {
+      const localStorageDiff = this.compareStorage(state1.localStorage, state2.localStorage);
+      if (localStorageDiff.added.length > 0 || localStorageDiff.removed.length > 0 || localStorageDiff.modified.length > 0) {
+        differences.localStorage = localStorageDiff;
+      }
     }
 
     // Compare sessionStorage
-    const sessionStorageDiff = this.compareStorage(state1.sessionStorage, state2.sessionStorage);
-    if (sessionStorageDiff.added.length > 0 || sessionStorageDiff.removed.length > 0 || sessionStorageDiff.modified.length > 0) {
-      differences.sessionStorage = sessionStorageDiff;
+    if (state1.sessionStorage && state2.sessionStorage) {
+      const sessionStorageDiff = this.compareStorage(state1.sessionStorage, state2.sessionStorage);
+      if (sessionStorageDiff.added.length > 0 || sessionStorageDiff.removed.length > 0 || sessionStorageDiff.modified.length > 0) {
+        differences.sessionStorage = sessionStorageDiff;
+      }
     }
 
     return differences;

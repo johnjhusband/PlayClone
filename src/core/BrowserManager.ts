@@ -5,6 +5,7 @@
 import { chromium, firefox, webkit, Browser, BrowserContext, Page } from 'playwright-core';
 import { LaunchOptions, BrowserType, ActionResult } from '../types';
 import { formatResponse } from '../utils/responseFormatter';
+import { AdvancedTimeoutManager } from '../utils/advancedTimeout';
 
 export class BrowserManager {
   private browser: Browser | null = null;
@@ -12,6 +13,7 @@ export class BrowserManager {
   private page: Page | null = null;
   private options: LaunchOptions;
   private browserType: BrowserType;
+  private timeoutManager: AdvancedTimeoutManager | null = null;
 
   constructor(options: LaunchOptions = {}) {
     this.options = {
@@ -58,6 +60,9 @@ export class BrowserManager {
 
       // Create initial page
       this.page = await this.context.newPage();
+      
+      // Initialize timeout manager with the page
+      this.timeoutManager = new AdvancedTimeoutManager(this.page);
 
       return formatResponse({
         success: true,
@@ -145,7 +150,19 @@ export class BrowserManager {
 
     try {
       const startTime = Date.now();
-      await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+      
+      // Use advanced timeout manager for navigation
+      if (this.timeoutManager) {
+        await this.timeoutManager.executeWithRetry(
+          async () => {
+            await this.page!.goto(url, { waitUntil: 'domcontentloaded' });
+            await this.timeoutManager!.waitForPageReady();
+          },
+          'navigation'
+        );
+      } else {
+        await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+      }
       
       return formatResponse({
         success: true,

@@ -37,6 +37,9 @@ export interface ElementSelector {
   xpath?: string;
   css?: string;
   index?: number;
+  ariaLabel?: string;
+  selector?: string;
+  normalized?: string;
 }
 
 export interface ActionResult {
@@ -69,10 +72,12 @@ export interface PageState {
   url: string;
   title: string;
   cookies: any[];
-  localStorage: Record<string, string>;
-  sessionStorage: Record<string, string>;
-  viewport: Viewport;
+  localStorage?: Record<string, string>;
+  sessionStorage?: Record<string, string>;
+  viewport?: Viewport;
   timestamp: number;
+  scrollPosition?: { x: number; y: number };
+  viewportSize?: { width: number; height: number };
 }
 
 export interface SessionData {

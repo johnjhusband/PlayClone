@@ -195,20 +195,26 @@ export class SessionManager {
       await page.goto(this.sessionData.state.url);
 
       // Restore localStorage and sessionStorage
-      await page.evaluate((storageData) => {
-        // Restore localStorage
-        Object.entries(storageData.localStorage).forEach(([key, value]) => {
-          localStorage.setItem(key, value);
+      if (this.sessionData.state.localStorage || this.sessionData.state.sessionStorage) {
+        await page.evaluate((storageData) => {
+          // Restore localStorage
+          if (storageData.localStorage) {
+            Object.entries(storageData.localStorage).forEach(([key, value]) => {
+              localStorage.setItem(key, value);
+            });
+          }
+          
+          // Restore sessionStorage
+          if (storageData.sessionStorage) {
+            Object.entries(storageData.sessionStorage).forEach(([key, value]) => {
+              sessionStorage.setItem(key, value);
+            });
+          }
+        }, {
+          localStorage: this.sessionData.state.localStorage || {},
+          sessionStorage: this.sessionData.state.sessionStorage || {},
         });
-        
-        // Restore sessionStorage
-        Object.entries(storageData.sessionStorage).forEach(([key, value]) => {
-          sessionStorage.setItem(key, value);
-        });
-      }, {
-        localStorage: this.sessionData.state.localStorage,
-        sessionStorage: this.sessionData.state.sessionStorage,
-      });
+      }
 
       return formatSuccess('restoreSession', {
         sessionId: targetSessionId,

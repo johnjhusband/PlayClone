@@ -572,6 +572,46 @@ export class ElementLocator {
   }
 
   /**
+   * Get selection strategies for a selector
+   */
+  private getSelectionStrategies(selector: ElementSelector): Array<{ selector: string; type: string }> {
+    const strategies: Array<{ selector: string; type: string }> = [];
+    
+    // Add text-based strategies
+    if (selector.text) {
+      strategies.push({ selector: `text="${selector.text}"`, type: 'text' });
+      strategies.push({ selector: `text=/${selector.text}/i`, type: 'text-regex' });
+    }
+    
+    // Add role-based strategies
+    if (selector.role) {
+      strategies.push({ selector: `role=${selector.role}`, type: 'role' });
+    }
+    
+    // Add aria-label strategies
+    if (selector.ariaLabel) {
+      strategies.push({ selector: `[aria-label="${selector.ariaLabel}"]`, type: 'aria-label' });
+    }
+    
+    // Add placeholder strategies
+    if (selector.placeholder) {
+      strategies.push({ selector: `[placeholder="${selector.placeholder}"]`, type: 'placeholder' });
+    }
+    
+    // Add CSS selector as fallback
+    if (selector.selector) {
+      strategies.push({ selector: selector.selector, type: 'css' });
+    }
+    
+    // Default fallback
+    if (strategies.length === 0 && selector.normalized) {
+      strategies.push({ selector: `text="${selector.normalized}"`, type: 'fallback-text' });
+    }
+    
+    return strategies;
+  }
+
+  /**
    * Locate all matching elements on the page
    */
   async locateAll(page: Page, selector: string | ElementSelector): Promise<Locator[]> {
@@ -638,7 +678,8 @@ export class ElementLocator {
       const tagName = await locator.evaluate(el => el.tagName.toLowerCase());
       const attributes = await locator.evaluate(el => {
         const attrs: Record<string, string> = {};
-        for (const attr of el.attributes) {
+        for (let i = 0; i < el.attributes.length; i++) {
+          const attr = el.attributes[i];
           attrs[attr.name] = attr.value;
         }
         return attrs;

@@ -25,6 +25,8 @@ AI-Native Browser Automation Framework - Control browsers with natural language,
 - 🛡️ **Comprehensive Error Handling** - Detailed error messages with recovery suggestions
 - 🚀 **High Performance** - Optimized for speed and minimal resource usage
 - 📝 **TypeScript First** - Full type safety and excellent IDE support
+- 🔍 **Search Engine Automation** - Built-in support for Google, DuckDuckGo, Bing with anti-bot bypass
+- ⏱️ **Advanced Timeout Handling** - Adaptive timeouts for complex SPAs and heavy sites
 
 ## 🚀 Quick Start
 
@@ -97,6 +99,53 @@ await pc.fill('search box at top of page', 'AI automation');
 await pc.select('country dropdown', 'United States');
 await pc.check('terms and conditions checkbox');
 ```
+
+## 🔍 Search Engine Automation
+
+PlayClone includes specialized handling for search engines:
+
+```typescript
+// Navigate to search engine
+await pc.navigate('https://google.com');
+
+// Perform search with anti-bot bypass
+await pc.search('PlayClone browser automation');
+
+// Extract search results
+const results = await pc.getSearchResults(5);
+console.log(results.data); 
+// [
+//   { title: 'Result 1', url: 'https://...', snippet: '...' },
+//   { title: 'Result 2', url: 'https://...', snippet: '...' },
+//   ...
+// ]
+```
+
+### Features:
+- **Automatic Detection**: Recognizes Google, DuckDuckGo, Bing
+- **Human-like Behavior**: Simulates mouse movements and typing delays
+- **Smart Submit**: Uses Enter key, search button, or both based on site
+- **Anti-bot Bypass**: Includes user agent spoofing and behavior randomization
+
+## ⏱️ Advanced Timeout Handling
+
+PlayClone automatically adapts timeouts based on site complexity:
+
+```typescript
+// Simple sites - Fast strategy (5-10s)
+await pc.navigate('https://example.com');
+
+// SPAs - Adaptive strategy (25-45s)
+await pc.navigate('https://github.com');
+
+// Heavy sites - Patient strategy (30-60s)
+await pc.navigate('https://cnn.com');
+
+// Anti-bot sites - Aggressive strategy (60-90s)
+await pc.navigate('https://duckduckgo.com');
+```
+
+The framework learns from each site visit and optimizes future timeouts.
 
 ## Core Components
 
