@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Script to help manually upload GitHub Actions workflows
+# Since OAuth doesn't allow workflow uploads, this script provides instructions
+
+echo "========================================"
+echo "GitHub Actions Workflow Upload Helper"
+echo "========================================"
+echo ""
+echo "Due to GitHub OAuth restrictions, workflow files cannot be pushed via git."
+echo "You need to manually upload them to enable CI/CD for PlayClone."
+echo ""
+echo "OPTION 1: GitHub Web Interface (Recommended)"
+echo "--------------------------------------------"
+echo "1. Go to: https://github.com/johnjhusband/PlayClone"
+echo "2. Click 'Create new file' or press '.' to open web editor"
+echo "3. Create the following files:"
+echo ""
+echo "   .github/workflows/ci.yml"
+echo "   .github/workflows/nightly.yml"
+echo "   .github/workflows/release.yml"
+echo ""
+echo "4. Copy content from local files:"
+ls -la .github/workflows/*.yml 2>/dev/null
+echo ""
+echo "OPTION 2: Using GitHub CLI (if you have gh installed)"
+echo "------------------------------------------------------"
+echo "If you have GitHub CLI with proper permissions:"
+echo ""
+echo "gh auth refresh -s workflow"
+echo "git add .github/"
+echo "git commit -m 'Add GitHub Actions workflows for CI/CD'"
+echo "git push origin main"
+echo ""
+echo "OPTION 3: Direct Upload"
+echo "-----------------------"
+echo "1. Navigate to your local .github/workflows/ directory"
+echo "2. Select all three .yml files"
+echo "3. Drag and drop them to: https://github.com/johnjhusband/PlayClone"
+echo "4. GitHub will create the proper directory structure"
+echo ""
+echo "Files to upload:"
+echo "----------------"
+for file in .github/workflows/*.yml; do
+    if [ -f "$file" ]; then
+        echo "✓ $file ($(wc -c < "$file") bytes)"
+    fi
+done
+echo ""
+echo "After uploading, GitHub Actions will automatically:"
+echo "- Run tests on every push"
+echo "- Execute nightly test suite at 2 AM UTC"
+echo "- Enable npm publishing on version tags"
+echo ""
+echo "========================================"
