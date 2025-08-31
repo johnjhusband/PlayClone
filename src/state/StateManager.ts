@@ -10,8 +10,15 @@ import { formatSuccess, formatError } from '../utils/responseFormatter';
 interface StateCheckpoint {
   id: string;
   name?: string;
-  state: PageState;
-  created: number;
+  url: string;
+  title: string;
+  timestamp: number;
+  cookies: any[];
+  localStorage?: any;
+  sessionStorage?: any;
+  scrollPosition: { x: number; y: number };
+  viewportSize: { width: number; height: number };
+  screenshot?: string;
   metadata?: Record<string, any>;
 }
 
@@ -86,8 +93,8 @@ export class StateManager {
         screenshot: options?.includeScreenshot ? await page.screenshot().catch(() => undefined) : undefined
       };
       
-      // Store the checkpoint in memory for retrieval by name
-      this.checkpoints.set(checkpointName, checkpoint as any);
+      // Store the checkpoint in memory for retrieval by id
+      this.checkpoints.set(checkpoint.id, checkpoint as any);
       
       return checkpoint;
     } catch (error) {
@@ -106,7 +113,7 @@ export class StateManager {
         viewportSize: { width: 1280, height: 720 },
         screenshot: undefined
       };
-      this.checkpoints.set(checkpointName, checkpoint as any);
+      this.checkpoints.set(checkpoint.id, checkpoint as any);
       return checkpoint;
     }
   }
@@ -123,8 +130,8 @@ export class StateManager {
         if (!checkpoint) {
           return false;
         }
-        // Use the state from the checkpoint if it exists, otherwise use the checkpoint itself
-        checkpoint = checkpoint.state || checkpoint;
+        // The checkpoint itself contains the state data
+        // No need to look for checkpoint.state
       } else {
         checkpoint = checkpointNameOrData;
       }
@@ -181,8 +188,14 @@ export class StateManager {
       const checkpoint: StateCheckpoint = {
         id,
         name: name || `Checkpoint at ${new Date().toISOString()}`,
-        state,
-        created: Date.now(),
+        url: state.url,
+        title: state.title,
+        timestamp: Date.now(),
+        cookies: state.cookies,
+        localStorage: state.localStorage,
+        sessionStorage: state.sessionStorage,
+        scrollPosition: state.scrollPosition || { x: 0, y: 0 },
+        viewportSize: state.viewportSize || { width: 1280, height: 720 },
         metadata,
       };
 
@@ -193,7 +206,7 @@ export class StateManager {
       if (this.checkpoints.size > this.maxCheckpoints) {
         // Remove oldest checkpoint
         const oldest = Array.from(this.checkpoints.values())
-          .sort((a, b) => a.created - b.created)[0];
+          .sort((a, b) => a.timestamp - b.timestamp)[0];
         this.checkpoints.delete(oldest.id);
         
         // Delete from disk if exists
@@ -213,7 +226,7 @@ export class StateManager {
         id,
         name: checkpoint.name,
         url: state.url,
-        created: checkpoint.created,
+        created: checkpoint.timestamp,
       });
     } catch (error) {
       return formatError(error as Error, 'saveCheckpoint');
@@ -249,8 +262,17 @@ export class StateManager {
       return formatSuccess('restoreCheckpoint', {
         id: checkpoint.id,
         name: checkpoint.name,
-        state: checkpoint.state,
-        created: checkpoint.created,
+        state: {
+          url: checkpoint.url,
+          title: checkpoint.title,
+          cookies: checkpoint.cookies,
+          localStorage: checkpoint.localStorage,
+          sessionStorage: checkpoint.sessionStorage,
+          scrollPosition: checkpoint.scrollPosition,
+          viewportSize: checkpoint.viewportSize,
+          timestamp: checkpoint.timestamp,
+        },
+        created: checkpoint.timestamp,
       });
     } catch (error) {
       return formatError(error as Error, 'restoreCheckpoint');
@@ -320,13 +342,13 @@ export class StateManager {
 
       // Convert to list and sort by creation time
       const list = Array.from(checkpoints.values())
-        .sort((a, b) => b.created - a.created)
+        .sort((a, b) => b.timestamp - a.timestamp)
         .map(cp => ({
           id: cp.id,
           name: cp.name,
-          url: cp.state.url,
-          title: cp.state.title,
-          created: cp.created,
+          url: cp.url,
+          title: cp.title,
+          created: cp.timestamp,
           metadata: cp.metadata,
         }));
 
@@ -380,13 +402,14 @@ export class StateManager {
   /**
    * List all states (for test compatibility)
    */
-  listStates(): Array<{ id: string; name: string; created: number }> {
+  listStates(): Array<{ id: string; name: string; created: number; url?: string }> {
     return Array.from(this.checkpoints.values())
-      .sort((a, b) => b.created - a.created)
+      .sort((a, b) => a.timestamp - b.timestamp)
       .map(cp => ({
         id: cp.id,
         name: cp.name || '',
-        created: cp.created
+        created: cp.timestamp,
+        url: cp.url
       }));
   }
 
@@ -405,13 +428,19 @@ export class StateManager {
     if (!checkpoint) {
       return null;
     }
-    return {
+    return JSON.stringify({
       id: checkpoint.id,
       name: checkpoint.name,
-      state: checkpoint.state,
-      created: checkpoint.created,
-      metadata: checkpoint.metadata
-    };
+      url: checkpoint.url,
+      title: checkpoint.title,
+      timestamp: checkpoint.timestamp,
+      cookies: checkpoint.cookies,
+      localStorage: checkpoint.localStorage,
+      sessionStorage: checkpoint.sessionStorage,
+      scrollPosition: checkpoint.scrollPosition,
+      viewportSize: checkpoint.viewportSize,
+      screenshot: checkpoint.screenshot
+    });
   }
 
   /**
@@ -419,17 +448,16 @@ export class StateManager {
    */
   importState(data: any): boolean {
     try {
-      if (!data || !data.id || !data.state) {
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      if (!parsed || !parsed.id) {
         return false;
       }
-      const checkpoint: StateCheckpoint = {
-        id: data.id,
-        name: data.name,
-        state: data.state,
-        created: data.created || Date.now(),
-        metadata: data.metadata
-      };
-      this.checkpoints.set(checkpoint.id, checkpoint);
+      // Store directly as a checkpoint
+      this.checkpoints.set(parsed.id, parsed);
+      // Also store by name if it has one
+      if (parsed.name) {
+        this.checkpoints.set(parsed.name, parsed);
+      }
       return true;
     } catch {
       return false;
@@ -472,12 +500,13 @@ export class StateManager {
       }
       
       return {
-        urlChanged: checkpoint1.state.url !== checkpoint2.state.url,
-        titleChanged: checkpoint1.state.title !== checkpoint2.state.title,
-        cookiesChanged: JSON.stringify(checkpoint1.state.cookies) !== JSON.stringify(checkpoint2.state.cookies),
-        localStorageChanged: JSON.stringify(checkpoint1.state.localStorage) !== JSON.stringify(checkpoint2.state.localStorage),
-        scrollPositionChanged: JSON.stringify(checkpoint1.state.scrollPosition) !== JSON.stringify(checkpoint2.state.scrollPosition),
-        timeDiff: Math.abs(checkpoint1.created - checkpoint2.created)
+        urlChanged: checkpoint1.url !== checkpoint2.url,
+        titleChanged: checkpoint1.title !== checkpoint2.title,
+        cookiesChanged: JSON.stringify(checkpoint1.cookies) !== JSON.stringify(checkpoint2.cookies),
+        localStorageChanged: JSON.stringify(checkpoint1.localStorage) !== JSON.stringify(checkpoint2.localStorage),
+        sessionStorageChanged: JSON.stringify(checkpoint1.sessionStorage) !== JSON.stringify(checkpoint2.sessionStorage),
+        scrollPositionChanged: JSON.stringify(checkpoint1.scrollPosition) !== JSON.stringify(checkpoint2.scrollPosition),
+        timeDiff: Math.abs(checkpoint1.timestamp - checkpoint2.timestamp)
       };
     }
     
@@ -534,13 +563,13 @@ export class StateManager {
     }
     
     try {
-      await this.restoreState(page, targetState.state);
+      await this.restoreState(page, targetState);
       return { 
         success: true, 
         data: {
           restoredTo: targetState.id,
           name: targetState.name,
-          url: targetState.state.url
+          url: targetState.url
         }
       };
     } catch (error) {
