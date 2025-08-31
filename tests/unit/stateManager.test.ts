@@ -33,7 +33,7 @@ describe('StateManager', () => {
     // Setup mock context
     mockContext = {
       cookies: jest.fn().mockResolvedValue([
-        { name: 'session', value: 'abc123', domain: 'example.com' }
+        { name: 'session', value: 'abc123', domain: 'example.com', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }
       ]),
       storageState: jest.fn().mockResolvedValue({
         cookies: [{ name: 'session', value: 'abc123' }],
@@ -68,7 +68,7 @@ describe('StateManager', () => {
 
       expect(mockContext.cookies).toHaveBeenCalled();
       expect(checkpoint.cookies).toEqual([
-        { name: 'session', value: 'abc123', domain: 'example.com' }
+        { name: 'session', value: 'abc123', domain: 'example.com', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }
       ]);
     });
 
@@ -134,7 +134,7 @@ describe('StateManager', () => {
       expect(result).toBe(true);
       expect(mockContext.clearCookies).toHaveBeenCalled();
       expect(mockContext.addCookies).toHaveBeenCalledWith([
-        { name: 'session', value: 'abc123', domain: 'example.com' }
+        { name: 'session', value: 'abc123', domain: 'example.com', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }
       ]);
     });
 
@@ -382,7 +382,7 @@ describe('StateManager', () => {
       await stateManager.saveState(mockPage, 'state1');
       
       mockContext.cookies.mockResolvedValue([
-        { name: 'session', value: 'xyz789', domain: 'example.com' }
+        { name: 'session', value: 'xyz789', domain: 'example.com', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }
       ]);
       await stateManager.saveState(mockPage, 'state2');
 

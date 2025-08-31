@@ -442,8 +442,7 @@ export class PlayClone {
     // getLinks doesn't support filter parameter yet, so get all links
     const result = await this.dataExtractor.getLinks(page);
     // Extract links data from the response - it's in the value property
-    const linksData = result.success && result.value ? 
-      result.value.result || result.value.links || result.value : null;
+    const linksData = result.success && result.value ? result.value : null;
     
     return {
       type: 'links',

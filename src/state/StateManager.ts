@@ -284,6 +284,218 @@ export class StateManager {
   }
 
   /**
+   * Get a saved state (for test compatibility)
+   */
+  getState(identifier: string): StateCheckpoint | undefined {
+    // Check memory first
+    let checkpoint = this.checkpoints.get(identifier);
+    
+    if (!checkpoint) {
+      // Search by name
+      checkpoint = Array.from(this.checkpoints.values())
+        .find(cp => cp.name === identifier);
+    }
+    
+    return checkpoint;
+  }
+
+  /**
+   * Delete a state (for test compatibility)
+   */
+  deleteState(identifier: string): boolean {
+    // Check if exists
+    const checkpoint = this.getState(identifier);
+    if (!checkpoint) {
+      return false;
+    }
+    
+    // Delete from memory
+    this.checkpoints.delete(checkpoint.id);
+    
+    // Delete from disk if auto-save enabled
+    if (this.autoSave) {
+      const filePath = path.join(this.checkpointDir, `${checkpoint.id}.json`);
+      fs.unlink(filePath).catch(() => {}); // Ignore errors
+    }
+    
+    return true;
+  }
+
+  /**
+   * List all states (for test compatibility)
+   */
+  listStates(): Array<{ id: string; name: string; created: number }> {
+    return Array.from(this.checkpoints.values())
+      .sort((a, b) => b.created - a.created)
+      .map(cp => ({
+        id: cp.id,
+        name: cp.name || '',
+        created: cp.created
+      }));
+  }
+
+  /**
+   * Clear all states (for test compatibility)
+   */
+  clearStates(): void {
+    this.checkpoints.clear();
+  }
+
+  /**
+   * Export state for serialization
+   */
+  exportState(identifier: string): any {
+    const checkpoint = this.getState(identifier);
+    if (!checkpoint) {
+      return null;
+    }
+    return {
+      id: checkpoint.id,
+      name: checkpoint.name,
+      state: checkpoint.state,
+      created: checkpoint.created,
+      metadata: checkpoint.metadata
+    };
+  }
+
+  /**
+   * Import state from serialized data
+   */
+  importState(data: any): boolean {
+    try {
+      if (!data || !data.id || !data.state) {
+        return false;
+      }
+      const checkpoint: StateCheckpoint = {
+        id: data.id,
+        name: data.name,
+        state: data.state,
+        created: data.created || Date.now(),
+        metadata: data.metadata
+      };
+      this.checkpoints.set(checkpoint.id, checkpoint);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Save state to file
+   */
+  async saveToFile(identifier: string, filePath: string): Promise<void> {
+    const checkpoint = this.getState(identifier);
+    if (!checkpoint) {
+      throw new Error(`State ${identifier} not found`);
+    }
+    const data = JSON.stringify(checkpoint, null, 2);
+    await fs.writeFile(filePath, data, 'utf-8');
+  }
+
+  /**
+   * Load state from file
+   */
+  async loadFromFile(filePath: string): Promise<string> {
+    const data = await fs.readFile(filePath, 'utf-8');
+    const checkpoint = JSON.parse(data) as StateCheckpoint;
+    this.checkpoints.set(checkpoint.id, checkpoint);
+    return checkpoint.id;
+  }
+
+  /**
+   * Compare two states (supports both IDs and PageState objects)
+   */
+  compareStates(state1OrId: string | PageState, state2OrId: string | PageState): any {
+    // Handle string IDs
+    if (typeof state1OrId === 'string' && typeof state2OrId === 'string') {
+      const checkpoint1 = this.getState(state1OrId);
+      const checkpoint2 = this.getState(state2OrId);
+      
+      if (!checkpoint1 || !checkpoint2) {
+        return null;
+      }
+      
+      return {
+        urlChanged: checkpoint1.state.url !== checkpoint2.state.url,
+        titleChanged: checkpoint1.state.title !== checkpoint2.state.title,
+        cookiesChanged: JSON.stringify(checkpoint1.state.cookies) !== JSON.stringify(checkpoint2.state.cookies),
+        localStorageChanged: JSON.stringify(checkpoint1.state.localStorage) !== JSON.stringify(checkpoint2.state.localStorage),
+        scrollPositionChanged: JSON.stringify(checkpoint1.state.scrollPosition) !== JSON.stringify(checkpoint2.state.scrollPosition),
+        timeDiff: Math.abs(checkpoint1.created - checkpoint2.created)
+      };
+    }
+    
+    // Handle PageState objects
+    const state1 = state1OrId as PageState;
+    const state2 = state2OrId as PageState;
+    const differences: Record<string, any> = {};
+
+    // Compare URLs
+    if (state1.url !== state2.url) {
+      differences.url = { from: state1.url, to: state2.url };
+    }
+
+    // Compare titles
+    if (state1.title !== state2.title) {
+      differences.title = { from: state1.title, to: state2.title };
+    }
+
+    // Compare cookies
+    const cookieDiff = this.compareCookies(state1.cookies, state2.cookies);
+    if (cookieDiff.added.length > 0 || cookieDiff.removed.length > 0 || cookieDiff.modified.length > 0) {
+      differences.cookies = cookieDiff;
+    }
+
+    // Compare localStorage
+    if (state1.localStorage && state2.localStorage) {
+      const localStorageDiff = this.compareStorage(state1.localStorage, state2.localStorage);
+      if (localStorageDiff.added.length > 0 || localStorageDiff.removed.length > 0 || localStorageDiff.modified.length > 0) {
+        differences.localStorage = localStorageDiff;
+      }
+    }
+
+    return differences;
+  }
+
+  /**
+   * Rollback to previous state
+   */
+  async rollback(page: any, steps: number = 1): Promise<any> {
+    const states = this.listStates();
+    
+    if (states.length === 0) {
+      return { success: false, error: 'No checkpoints available' };
+    }
+    
+    if (steps > states.length) {
+      return { success: false, error: `Only ${states.length} checkpoints available` };
+    }
+    
+    // Get the target state (0-indexed, so steps-1)
+    const targetState = this.getState(states[Math.min(steps - 1, states.length - 1)].id);
+    if (!targetState) {
+      return { success: false, error: 'Target checkpoint not found' };
+    }
+    
+    try {
+      await this.restoreState(page, targetState.state);
+      return { 
+        success: true, 
+        data: {
+          restoredTo: targetState.id,
+          name: targetState.name,
+          url: targetState.state.url
+        }
+      };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Rollback failed' 
+      };
+    }
+  }
+
+  /**
    * Delete a checkpoint
    */
   async deleteCheckpoint(identifier: string): Promise<ActionResult> {
@@ -347,46 +559,6 @@ export class StateManager {
     }
   }
 
-  /**
-   * Compare two states
-   */
-  compareStates(state1: PageState, state2: PageState): Record<string, any> {
-    const differences: Record<string, any> = {};
-
-    // Compare URLs
-    if (state1.url !== state2.url) {
-      differences.url = { from: state1.url, to: state2.url };
-    }
-
-    // Compare titles
-    if (state1.title !== state2.title) {
-      differences.title = { from: state1.title, to: state2.title };
-    }
-
-    // Compare cookies
-    const cookieDiff = this.compareCookies(state1.cookies, state2.cookies);
-    if (cookieDiff.added.length > 0 || cookieDiff.removed.length > 0 || cookieDiff.modified.length > 0) {
-      differences.cookies = cookieDiff;
-    }
-
-    // Compare localStorage
-    if (state1.localStorage && state2.localStorage) {
-      const localStorageDiff = this.compareStorage(state1.localStorage, state2.localStorage);
-      if (localStorageDiff.added.length > 0 || localStorageDiff.removed.length > 0 || localStorageDiff.modified.length > 0) {
-        differences.localStorage = localStorageDiff;
-      }
-    }
-
-    // Compare sessionStorage
-    if (state1.sessionStorage && state2.sessionStorage) {
-      const sessionStorageDiff = this.compareStorage(state1.sessionStorage, state2.sessionStorage);
-      if (sessionStorageDiff.added.length > 0 || sessionStorageDiff.removed.length > 0 || sessionStorageDiff.modified.length > 0) {
-        differences.sessionStorage = sessionStorageDiff;
-      }
-    }
-
-    return differences;
-  }
 
   /**
    * Compare cookies

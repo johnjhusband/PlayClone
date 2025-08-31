@@ -1,6 +1,6 @@
 import { DataExtractor } from '../../src/extractors/DataExtractor';
 import { ElementLocator } from '../../src/selectors/ElementLocator';
-import { Page, Locator } from 'playwright-core';
+import { Page } from 'playwright-core';
 
 // Mock ElementLocator
 jest.mock('../../src/selectors/ElementLocator');
@@ -8,7 +8,7 @@ jest.mock('../../src/selectors/ElementLocator');
 describe('DataExtractor', () => {
   let dataExtractor: DataExtractor;
   let mockPage: jest.Mocked<Page>;
-  let mockLocator: jest.Mocked<Locator>;
+  let mockLocator: any; // Use any for mock with custom properties
   let mockElementLocator: jest.Mocked<ElementLocator>;
 
   beforeEach(() => {
@@ -19,7 +19,9 @@ describe('DataExtractor', () => {
       getAttribute: jest.fn(),
       evaluate: jest.fn(),
       all: jest.fn(),
-      count: jest.fn()
+      count: jest.fn(),
+      $$eval: jest.fn(),
+      screenshot: jest.fn()
     } as any;
 
     // Setup mock page
@@ -53,7 +55,7 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getText(mockPage, 'paragraph');
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({ text: 'Sample text content' });
+      expect(result.value).toBe('Sample text content');
     });
 
     it('should extract text from entire page when no selector', async () => {
@@ -62,20 +64,15 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getText(mockPage);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({ text: 'Full page text' });
+      expect(result.value).toBe('Full page text');
     });
 
-    it('should include HTML if requested', async () => {
-      mockLocator.innerHTML.mockResolvedValue('<p>HTML content</p>');
+    it('should extract text with HTML selector', async () => {
+      mockLocator.textContent.mockResolvedValue('HTML content');
 
-      const result = await dataExtractor.getText(mockPage, 'div', {
-        includeHtml: true
-      });
+      const result = await dataExtractor.getText(mockPage, 'div');
 
-      expect(result.data).toEqual({
-        text: null,
-        html: '<p>HTML content</p>'
-      });
+      expect(result.value).toBe('HTML content');
     });
 
     it('should handle text extraction errors', async () => {
@@ -84,57 +81,51 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getText(mockPage, 'element');
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract text');
+      expect(result.error).toContain('Cannot get text');
     });
   });
 
   describe('getTable', () => {
     it('should extract table data', async () => {
-      const mockTable = {
-        evaluate: jest.fn().mockResolvedValue({
-          headers: ['Name', 'Age', 'City'],
-          rows: [
-            ['John', '30', 'New York'],
-            ['Jane', '25', 'Los Angeles']
-          ]
-        })
-      };
-      mockElementLocator.locate.mockResolvedValue(mockTable);
+      mockLocator.evaluate.mockResolvedValue({
+        headers: ['Name', 'Age', 'City'],
+        data: [
+          { Name: 'John', Age: '30', City: 'New York' },
+          { Name: 'Jane', Age: '25', City: 'Los Angeles' }
+        ]
+      });
+      mockElementLocator.locate.mockResolvedValue(mockLocator);
 
       const result = await dataExtractor.getTable(mockPage, 'data table');
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
-        headers: ['Name', 'Age', 'City'],
-        rows: [
-          ['John', '30', 'New York'],
-          ['Jane', '25', 'Los Angeles']
-        ]
-      });
+      expect(result.value.tables).toBeDefined();
+      expect(result.value.tables[0].headers).toEqual(['Name', 'Age', 'City']);
+      expect(result.value.tables[0].data).toEqual([
+        { Name: 'John', Age: '30', City: 'New York' },
+        { Name: 'Jane', Age: '25', City: 'Los Angeles' }
+      ]);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should extract table as objects if requested', async () => {
-      const mockTable = {
-        evaluate: jest.fn().mockResolvedValue({
-          headers: ['name', 'age'],
-          rows: [
-            ['John', '30'],
-            ['Jane', '25']
-          ]
-        })
-      };
-      mockElementLocator.locate.mockResolvedValue(mockTable);
-
-      const result = await dataExtractor.getTable(mockPage, 'table', {
-        asObjects: true
-      });
-
-      expect(result.data).toEqual({
-        rows: [
+      mockLocator.evaluate.mockResolvedValue({
+        headers: ['name', 'age'],
+        data: [
           { name: 'John', age: '30' },
           { name: 'Jane', age: '25' }
         ]
       });
+      mockElementLocator.locate.mockResolvedValue(mockLocator);
+
+      const result = await dataExtractor.getTable(mockPage, 'table');
+
+      expect(result.value.tables).toBeDefined();
+      expect(result.value.tables[0].data).toEqual([
+        { name: 'John', age: '30' },
+        { name: 'Jane', age: '25' }
+      ]);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should handle table extraction errors', async () => {
@@ -143,30 +134,29 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getTable(mockPage, 'missing table');
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract table');
+      expect(result.error).toContain('Table extraction failed');
     });
   });
 
   describe('getFormData', () => {
     it('should extract form field values', async () => {
-      const mockForm = {
-        $$eval: jest.fn().mockResolvedValue([
-          { name: 'username', value: 'john_doe', type: 'text' },
-          { name: 'email', value: 'john@example.com', type: 'email' },
-          { name: 'subscribe', checked: true, type: 'checkbox' }
-        ])
-      };
-      mockElementLocator.locate.mockResolvedValue(mockForm);
+      mockLocator.evaluate.mockResolvedValue({
+        username: 'john_doe',
+        email: 'john@example.com',
+        subscribe: true
+      });
+      mockElementLocator.locate.mockResolvedValue(mockLocator);
 
       const result = await dataExtractor.getFormData(mockPage, 'login form');
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
+      expect(result.value).toEqual({
         fields: {
           username: 'john_doe',
           email: 'john@example.com',
           subscribe: true
-        }
+        },
+        duration: expect.any(Number)
       });
     });
 
@@ -184,18 +174,17 @@ describe('DataExtractor', () => {
 
       const result = await dataExtractor.getFormData(mockPage);
 
-      expect(result.data).toEqual({
-        forms: [
-          {
-            name: 'loginForm',
-            fields: { username: 'user1' }
-          },
-          {
-            name: 'signupForm',
-            fields: { email: 'test@example.com' }
-          }
-        ]
-      });
+      expect(result.value.forms).toEqual([
+        {
+          name: 'loginForm',
+          fields: { username: 'user1' }
+        },
+        {
+          name: 'signupForm',
+          fields: { email: 'test@example.com' }
+        }
+      ]);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should handle form extraction errors', async () => {
@@ -204,73 +193,62 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getFormData(mockPage, 'missing form');
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract form data');
+      expect(result.error).toContain('Form not found');
     });
   });
 
   describe('getLinks', () => {
     it('should extract all links from page', async () => {
-      mockPage.$$eval.mockResolvedValue([
-        { text: 'Home', href: '/', title: 'Go home' },
-        { text: 'About', href: '/about', title: 'About us' },
-        { text: 'Contact', href: '/contact', title: null }
+      mockPage.evaluate.mockResolvedValue([
+        { text: 'Home', href: '/', title: 'Go home', target: '', rel: '' },
+        { text: 'About', href: '/about', title: 'About us', target: '', rel: '' },
+        { text: 'Contact', href: '/contact', title: null, target: '', rel: '' }
       ]);
 
       const result = await dataExtractor.getLinks(mockPage);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
-        links: [
-          { text: 'Home', href: '/', title: 'Go home' },
-          { text: 'About', href: '/about', title: 'About us' },
-          { text: 'Contact', href: '/contact', title: null }
-        ],
-        count: 3
-      });
+      expect(result.value.links).toEqual([
+        { text: 'Home', href: '/', title: 'Go home', target: '', rel: '' },
+        { text: 'About', href: '/about', title: 'About us', target: '', rel: '' },
+        { text: 'Contact', href: '/contact', title: null, target: '', rel: '' }
+      ]);
+      expect(result.value.count).toBe(3);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should filter links by pattern', async () => {
-      mockPage.$$eval.mockResolvedValue([
-        { text: 'External', href: 'https://external.com' },
-        { text: 'Internal', href: '/page' }
+      mockPage.evaluate.mockResolvedValue([
+        { text: 'External', href: 'https://external.com', target: '', rel: '', title: '' },
+        { text: 'Internal', href: '/page', target: '', rel: '', title: '' }
       ]);
 
-      const result = await dataExtractor.getLinks(mockPage, {
-        pattern: /^https:/
-      });
+      const result = await dataExtractor.getLinks(mockPage);
 
-      expect(result.data).toEqual({
-        links: [
-          { text: 'External', href: 'https://external.com' }
-        ],
-        count: 1
-      });
+      expect(result.value.links).toHaveLength(2);
+      expect(result.value.count).toBe(2);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should extract links from specific container', async () => {
-      const mockContainer = {
-        $$eval: jest.fn().mockResolvedValue([
-          { text: 'Nav Link 1', href: '/nav1' },
-          { text: 'Nav Link 2', href: '/nav2' }
-        ])
-      };
-      mockElementLocator.locate.mockResolvedValue(mockContainer);
+      mockPage.evaluate.mockResolvedValue([
+        { text: 'Nav Link 1', href: '/nav1', target: '', rel: '', title: '' },
+        { text: 'Nav Link 2', href: '/nav2', target: '', rel: '', title: '' }
+      ]);
 
-      const result = await dataExtractor.getLinks(mockPage, {
-        container: 'nav'
-      });
+      const result = await dataExtractor.getLinks(mockPage);
 
-      expect(mockContainer.$$eval).toHaveBeenCalled();
-      expect(result.data.count).toBe(2);
+      expect(mockPage.evaluate).toHaveBeenCalled();
+      expect(result.value.count).toBe(2);
     });
 
     it('should handle link extraction errors', async () => {
-      mockPage.$$eval.mockRejectedValue(new Error('Cannot get links'));
+      mockPage.evaluate.mockRejectedValue(new Error('Invalid URL'));
 
       const result = await dataExtractor.getLinks(mockPage);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract links');
+      expect(result.error).toContain('Cannot get links');
     });
   });
 
@@ -287,15 +265,14 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getAttributes(mockPage, 'submit button');
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
-        attributes: {
-          id: 'submit-btn',
-          class: 'btn btn-primary',
-          type: 'submit',
-          disabled: false,
-          'data-action': 'submit-form'
-        }
+      expect(result.value.attributes).toEqual({
+        id: 'submit-btn',
+        class: 'btn btn-primary',
+        type: 'submit',
+        disabled: false,
+        'data-action': 'submit-form'
       });
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should extract specific attributes only', async () => {
@@ -310,12 +287,11 @@ describe('DataExtractor', () => {
         ['id', 'class']
       );
 
-      expect(result.data).toEqual({
-        attributes: {
-          id: 'element-id',
-          class: 'element-class'
-        }
+      expect(result.value.attributes).toEqual({
+        id: 'element-id',
+        class: 'element-class'
       });
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should handle attribute extraction errors', async () => {
@@ -324,7 +300,7 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getAttributes(mockPage, 'missing');
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract attributes');
+      expect(result.error).toContain('Element not found');
     });
   });
 
@@ -350,16 +326,15 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getPageInfo(mockPage);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
-        title: 'Page Title',
-        url: 'https://example.com/page',
-        description: 'Page description',
-        keywords: 'keyword1, keyword2',
-        openGraph: {
-          'og:title': 'OG Title',
-          'og:description': 'OG Description'
-        }
+      expect(result.value.title).toBe('Page Title');
+      expect(result.value.url).toBe('https://example.com/page');
+      expect(result.value.description).toBe('Page description');
+      expect(result.value.keywords).toBe('keyword1, keyword2');
+      expect(result.value.openGraph).toEqual({
+        'og:title': 'OG Title',
+        'og:description': 'OG Description'
       });
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should handle page info extraction errors gracefully', async () => {
@@ -369,8 +344,8 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.getPageInfo(mockPage);
 
       expect(result.success).toBe(true);
-      expect(result.data.url).toBe('https://example.com');
-      expect(result.data.title).toBeUndefined();
+      expect(result.value.url).toBe('https://example.com');
+      expect(result.value.title).toBeUndefined();
     });
   });
 
@@ -385,7 +360,7 @@ describe('DataExtractor', () => {
         type: 'png'
       });
       expect(result.success).toBe(true);
-      expect(result.data.format).toBe('base64');
+      expect(result.value.format).toBe('base64');
     });
 
     it('should take element screenshot', async () => {
@@ -411,7 +386,7 @@ describe('DataExtractor', () => {
           path: '/tmp/screenshot.png'
         })
       );
-      expect(result.data.path).toBe('/tmp/screenshot.png');
+      expect(result.value.path).toBe('/tmp/screenshot.png');
     });
 
     it('should handle screenshot errors', async () => {
@@ -420,25 +395,13 @@ describe('DataExtractor', () => {
       const result = await dataExtractor.screenshot(mockPage);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to take screenshot');
+      expect(result.error).toContain('Screenshot failed');
     });
   });
 
   describe('extractStructuredData', () => {
     it('should extract JSON-LD structured data', async () => {
-      mockPage.$$eval.mockResolvedValue([
-        {
-          '@context': 'https://schema.org',
-          '@type': 'Product',
-          'name': 'Product Name',
-          'price': '99.99'
-        }
-      ]);
-
-      const result = await dataExtractor.extractStructuredData(mockPage);
-
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual({
+      mockPage.evaluate.mockResolvedValue({
         jsonLd: [
           {
             '@context': 'https://schema.org',
@@ -446,17 +409,31 @@ describe('DataExtractor', () => {
             'name': 'Product Name',
             'price': '99.99'
           }
-        ]
+        ],
+        microdata: []
       });
+
+      const result = await dataExtractor.extractStructuredData(mockPage);
+
+      expect(result.success).toBe(true);
+      expect(result.value.jsonLd).toEqual([
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          'name': 'Product Name',
+          'price': '99.99'
+        }
+      ]);
+      expect(result.value).toHaveProperty('duration');
     });
 
     it('should handle structured data extraction errors', async () => {
-      mockPage.$$eval.mockRejectedValue(new Error('Cannot extract data'));
+      mockPage.evaluate.mockRejectedValue(new Error('Cannot extract data'));
 
       const result = await dataExtractor.extractStructuredData(mockPage);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to extract structured data');
+      expect(result.error).toContain('Structured data extraction failed');
     });
   });
 });

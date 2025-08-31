@@ -14,6 +14,7 @@ export class PlayCloneError extends Error {
   public readonly details?: any;
   public readonly retryable: boolean;
   public readonly suggestion?: string;
+  public readonly cause?: Error;
 
   constructor(
     message: string,

@@ -20,15 +20,20 @@ const mcpServer = new McpServer({
 });
 
 // Get or create browser instance
-async function getBrowser(sessionId) {
+async function getBrowser(sessionId, options = {}) {
   if (!sessionId) {
     sessionId = `session-${++poolId}`;
   }
   
   if (!browserPool.has(sessionId)) {
+    // Check environment variable for headless mode preference
+    // Default to visible browser (headless: false) for better user experience
+    const headless = process.env.PLAYCLONE_HEADLESS === 'true' ? true : false;
+    
     const instance = new PlayClone({ 
-      headless: true,
-      viewport: { width: 1280, height: 720 }
+      headless: headless,
+      viewport: { width: 1280, height: 720 },
+      ...options // Allow overrides from tool calls
     });
     browserPool.set(sessionId, instance);
   }

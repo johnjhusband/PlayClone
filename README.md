@@ -274,6 +274,20 @@ See the `/examples` directory for complete examples:
 - `basic-usage.ts` - Basic browser automation
 - `ai-assistant-example.ts` - AI assistant integration
 
+## MCP Server Integration
+
+PlayClone includes an MCP (Model Context Protocol) server for AI assistant integration:
+
+```bash
+# Start MCP server with visible browser (default)
+node mcp-server-v2.cjs
+
+# Start MCP server with headless browser (for servers)
+PLAYCLONE_HEADLESS=true node mcp-server-v2.cjs
+```
+
+The MCP server defaults to **visible browser mode** (headless: false) so users can see automation happening in real-time. This provides better transparency and debugging capabilities. Use the `PLAYCLONE_HEADLESS=true` environment variable only when running on servers without displays.
+
 ## Development
 
 ```bash

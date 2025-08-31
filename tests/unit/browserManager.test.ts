@@ -26,7 +26,15 @@ describe('BrowserManager', () => {
       goto: jest.fn(),
       close: jest.fn(),
       url: jest.fn().mockReturnValue('https://example.com'),
-      title: jest.fn().mockResolvedValue('Test Page')
+      title: jest.fn().mockResolvedValue('Test Page'),
+      waitForTimeout: jest.fn().mockResolvedValue(undefined),
+      waitForLoadState: jest.fn().mockResolvedValue(undefined),
+      evaluate: jest.fn().mockResolvedValue(true),
+      waitForFunction: jest.fn().mockResolvedValue(undefined),
+      goBack: jest.fn().mockResolvedValue(undefined),
+      goForward: jest.fn().mockResolvedValue(undefined),
+      reload: jest.fn().mockResolvedValue(undefined),
+      bringToFront: jest.fn().mockResolvedValue(undefined)
     } as any;
 
     // Setup mock browser and context

@@ -498,6 +498,44 @@ export class ActionExecutor {
   }
 
   /**
+   * Get value from input element
+   */
+  async getValue(page: Page, selector: string | ElementSelector): Promise<ActionResult> {
+    try {
+      const element = await this.elementLocator.locate(page, selector);
+      
+      if (!element) {
+        return formatError(`Element not found: ${this.selectorToString(selector)}`, 'getValue');
+      }
+
+      // Get the tag name to determine how to get the value
+      const tagName = await element.evaluate((el) => el.tagName.toLowerCase());
+      
+      let value: any;
+      
+      if (tagName === 'input') {
+        const type = await element.getAttribute('type');
+        if (type === 'checkbox' || type === 'radio') {
+          value = await element.isChecked();
+        } else {
+          value = await element.inputValue();
+        }
+      } else if (tagName === 'select') {
+        value = await element.evaluate((el) => (el as HTMLSelectElement).value);
+      } else if (tagName === 'textarea') {
+        value = await element.inputValue();
+      } else {
+        // For other elements, get text content
+        value = await element.textContent();
+      }
+
+      return formatSuccess('getValue', value, this.selectorToString(selector));
+    } catch (error) {
+      return formatError(error as Error, 'getValue');
+    }
+  }
+
+  /**
    * Convert selector to string for logging
    */
   private selectorToString(selector: string | ElementSelector): string {

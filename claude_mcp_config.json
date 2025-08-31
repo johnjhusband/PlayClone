@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "playclone": {
+      "command": "node",
+      "args": ["mcp-server-v2.cjs"],
+      "env": {
+        "PLAYCLONE_HEADLESS": "false"
+      }
+    }
+  }
+}
