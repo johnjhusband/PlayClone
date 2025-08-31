@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756603108635_1znv0e3",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756603106849&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2gT55yvVPnqVrlDQEp9y5mgl0J7BMOhDxlHVWT4lE7eYV3G2XqZow",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772155105.659251,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=NLw5AXD3Xc3cuM8Trye-o9DcF0BSXs_Vans95jIGBLC8O8a6JMnZts38gdiyzgtXaX80hPBXPfmnlk-FxWNsmsMLiCrSNRmtkdgB62c-TiVJDRCZnJRoSbFgNgrtqAcO1lyK2CBi5q9E3gCSsYcVP3u-55BciZAVueNftO-XYWkGQHCj2s6m6qZyiXamALwuiwaUtcKVK4DVkpgY67qbboI4QMD__u1cQQ",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772414305.963982,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"lego gremlins gizmo\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"craig jones cji 2\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"atlantic hurricane season\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"the summer i turned pretty trailer\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"metallica stephen talkhouse concert\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"red rock casino million dollar jackpot\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"chase bank safety deposit boxes\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"eggs recalled salmonella\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"korn concert\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"steam uk age verification\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"-8294823460376365985\",\"q\":\"IHZtzDMXUeZpJVoQrir0qwQnPgY\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756603105437": "p:*|l:2_[1756603105436]",
+      "hsb;;1756603105436": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756603106849&no_sw_cr=1\",\"metadata\":{\"entryId\":1756603105438,\"pushId\":1756603105436,\"stackId\":1756603105437,\"stackIndex\":0}}",
+      "_c;;i": "p:*|l:9007199254740991_5"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756603108634
+  },
+  "created": 1756603108635
+}

@@ -4,21 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-PlayClone is a new repository with no existing codebase.
+PlayClone is the repository where all code for this project will be committed.
 
 ## Repository Status
 
 - **Created**: August 27, 2025
-- **Status**: Empty repository, not yet initialized with git
-- **Purpose**: To be determined
+- **Status**: Repository initialized and pushed to GitHub
+- **Purpose**: Main codebase for PlayClone project
+- **Repository URL**: https://github.com/johnjhusband/PlayClone
 
-## Getting Started
+## Development Workflow
 
-This repository is currently empty. When starting development:
+**All code for this project must be committed to this repository.**
 
-1. Initialize git: `git init`
-2. Create initial project structure based on requirements
-3. Update this CLAUDE.md file with project-specific information once the codebase is established
+1. All development work happens in `/home/john/repos/PlayClone/`
+2. Commit frequently with descriptive messages
+3. Push to GitHub: `git push origin main`
+4. Update this CLAUDE.md file as the project evolves
 
 ## Notes
 

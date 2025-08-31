@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756603777385_z07r585",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756603776076&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2gOo69yATp8V1yB6VYdzOYF1VfdQ6TjtWJh6eCpyjm2M7CGb3Drog",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772155774.534311,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=YQG83GEZI6-A55qshjHoql5yxk_mb9XGQUAjimhdDXXU1d6wvsM9C_RqZlIQTJSTTenSK6jdX9TPXeOfNkuSe8gr2LBMSK-lt_9vu0wR2a_ZBUS21rlVvLj-qZBgA6o29Ubgc7C9Gjf7JzQZEySBK2XF7bMzeJkcb3osQTDsa-aSItka7wK231KIenpw7FGgwTRtvFqRex4AIT3iZn1Sz7D4WHRR220xtA",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772414974.26673,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"lake geneva drinking water\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"long walk movie treadmill screening\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"battlefield 6 minimum specs\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"alaska pfd program stimulus payment\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"walmart shrimp recalled\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"trump student visas\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"labor day sales deals\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"golden state warriors trade\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"ufc 322 tickets\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"hyundai tucson santa fe recall\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"8820586846548956987\",\"q\":\"cpJB6JXO-cVlgwJlsusnOuSvNck\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756603774320": "p:*|l:2_[1756603774319]",
+      "hsb;;1756603774319": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756603776076&no_sw_cr=1\",\"metadata\":{\"entryId\":1756603774321,\"pushId\":1756603774319,\"stackId\":1756603774320,\"stackIndex\":0}}",
+      "_c;;i": "p:*|l:9007199254740991_5"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756603777385
+  },
+  "created": 1756603777385
+}

@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756605372337_xaij9e6",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756605370377&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2juwEjwULI5LeZLBNao2WGxErJBBbUc8If2WJybO22JD9edRsYdewQ",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772157369.374122,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=KqGJ3E8jCSoxP8UaUvHg6LFjM76moQweKhjEilp7_8U94xgjsGQoBJE0VI729V0sAHuDAaoU28M1X7OiBHFrNsYjCImHhyMHVBNG9BgZULaER8Vuy0GwgjcpLy5F3pjS-QfsfWZTq49icmvCRczAjaHDh-5rZmFZp7hKRTG6dL68VFLIgaf_OYhnWiOZTVuiBBIIRZfihfntjnr1lUJ4raP_J4kWEl9SJNk",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772416569.533101,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"philadelphia eagles\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"Philadelphia Eagles\",\"zi\":\"Football team\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tDP1TcwLUk3NmD0Ei7IyMxJTEnNAdKJCqmJ6TmpxQCXKQpV\"},\"zs\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAAulBMVEX///8AAACgrK+ntLejr7IAMD2qtrpUWlzEy80AKznb3+CbqKsAOEUAOkTq7e56g4VGTE0AR1L4+fnj5ue9xcfP1dZqcnSMl5q0vb8AQEtCY2oAKS8AFRgANT0ACg7y8/SampoAICW3t7dfZmgAKDJxenyBi44aHB0AAAgAGSGRoKRPbXQAHS4vWGB1iY5adnwAFSIADxgjJSUwLSw8OzsAECMAABWPjY2CgYErNDalpaUXFBQcT1kAIS7ZbunHAAAEpElEQVRYhe1XWXuqShC0mWEdw44DGkFFNGLUk4STuMT//7duD6jR5CrmJI/Wg8yHUvRSXTM2GjfccMMNN/wqjJD8Glei5VNZfgx+RKLRHZnPZ3IzuutG7R+wGVyeimuQz2Tk6twDdOR/DtDL32V53jDJQm7KnT5UiKb/xuaStj7sR202wwt8oKN732QycvzQFvqfGO4dp/skWJ7tNBtxycLl3fybdNNZw8ybf+GlV8TdBwA7HeWSxBiTJOUZoN90v0ent7W2YEu8MYzVURgYnpm4jcQztFAE2PyOBr2FHjnOa/yGVVqOeZCUd11DU5iIkIgKzq6nS+Z6vxu9qr5YD3aV93yi+L4fSpiwChA3TfGKq/iY/gfgaXnaQhOfNQ2NIB8pOzLN522ZX0HnRw/2Enqf3+1hthKlRCHSCPnuu53JJHqvpzOnr2PN753edI2QMm61Urt4PtJh9wodMh16DTc5uWeEo9SGr7hv0jq6ZPb6Yn4KLkxXKxWlzCghCoJQKee8EFVc1PFpMiz3S7/MxuuNBp6oppuYXqCFpagliUoi4doCsi2sq9XaquI0jONYE4QX+EI2hZgT8yvFCeZbGFR0K+3TV14QiokrIWSTYgH1OudaDCs+Y6OevDrBQavkvAfJMGFduZJvDa0vWjCDkO6xk7XOavimQ1E/d7AE22+43pGqPZ9KfJSlqqqmaFy5UvqCVMPXHsIbXt5aAHngH1XHoJb6/EWBkTOnl0qYvPehJRYABYzyj9YaVgHPassacT6yWkfM99HjhRpqzQlkYjEANYXs0GIvXWUDwzBQf1QS9VMkq9iZ/wWzduc6VP0IAOaNdD9O7rpnin5ofhiGPlKWiiZsLAJ0zm+frNmHtJzdNWwA8PHqvhk03IDku9E4gHIRoBOd9UF9CNAT6a2fQW3BnQ97EbqGYaL/hdIpyp7I54fEcDqHSvfC+RI+mmdqtDQEQig9aFr05U6+4FoGNniTpWkLBYP5artUPNcjlGdqgRUbF6pFScW3EqYgG+f5Aj2GlFDFYmQE9tt6UOZiLgfa6NQBU3olH2xygj8sMkZZAa1BEAzeCkilMbQ4RfNjPFuVjBuJMJFvt3khX0+GVVkf4ZoYAFeFJmwLWlCo4pCgcqyfwktB21np+s4l03IeXsheDmL3IUoYYlRiWOFpMpkImr0bVJAvno4WE9i1j0hWaovoNnZGiQrx8D0Pw7kcIyMh/DBw+sVd098CLwkpO24AVaDvVONHUKQgif6X2ho6lz11HkMVnsgoxgRtMagFBuTsf6IfvKADEzm/SIdDNykjpFjsvj5lfFiE+GxG1KfDk3cV3+SdPb6z2lOHNgSLlsPUcYS0miAIcUPT99uyW0YYbxefd+r/h7sFlZTTXu1fMuCZSlXUp4MzBX+wFMPZ5y3rLKYxMCqRDTTF+5PHArklDvIhN386XeQX5uIzgkc0fELZeBLhuc3bphm0FNjWni/OQ9HvcS4438R/84YxSTM7LJ5+8s+j4U23eBB/2M5QYOajTcLi4bx1XklJ+ZxVZcKmvDxEdeeLb2ARo+B+ka8RbLe157PvgdcdV2644YYbbqjDf7KyYT4QZ64tAAAAAElFTkSuQmCC\"}],[\"massachusetts state flag finalists\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"roblox grow a garden fairy event\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"lego gremlins gizmo\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"craig jones cji 2\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"pokemon legends mega evolutions\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"atlantic hurricane season\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"mortal kombat ii movie\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"mortal kombat ii movie\",\"zi\":\"Mortal Kombat II — 2025 film\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tVP1zc0LDGqKDO1yC0zYPQSy80vKknMUcjOz01KLFHIzFTIzS_LTAUA9jYNEw\"},\"zs\":\"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAFAAUAMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABQYDBAcCAf/EAC4QAAIBAwMDAwMDBQEAAAAAAAECAwAEEQUSIQYTMUFRcWGBkRQioTJCUmKxI//EABcBAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAbEQEBAAMBAQEAAAAAAAAAAAAAAQIRMSFBEv/aAAwDAQACEQMRAD8A4bSlKD6PPPipjT9Ej1GVo7TUImZULsDE42qPU8VDVZehj27y8lZHZGtzEAgyWdmXCgepOD+KsZy8iOu9Kt7S4kt7jUYlkjJVh2n8j7VksdEW/aQWl9FIY03v/wCbjavv4q2anp91plu99q3TFvdWDHDCeYrKp9CGQhh9QcjjwKkelbWz1TQ7++0ewe0lhsmt5YCd4mAcPvRsDLLnBBycbfu+s/q62oFxpEFuSsupwKwGdpR8n+PpUTVl67iEV/YAAAtp8THHvzVapWsfYUpSo0UpSgV1rRJoOnNMn1JR3rlMiBTztHALYHgsQdzecCuU2/Z7ym5EhiB/cIyAxHsCfHzzVxj1iBNQ2XhRrR1aMtGgfYrYIZd3sQp8c48VqOebPN1VqTxR22rXyxROO8zdv98qMxOBgHH0PpWGx1+TvLJbxMtkJd0yWLvDNj0O4NzgEgE/UZANb990pBraW5ttTihuIbdIo0dSY5Vy4Uq/rna2POQB71W+m7aW3v2mEiboRnAOcnxRnU1taes9FTqrUYLvpueWe4/Q96SzulZJigO7eGP7Xzvz59DjODjmtXvXP1llf26RXW+6m0dJbV0TZ2Y+T2gB5wofB88iqQ0TCFJj/Q7Mo+RjP/RUrpjxjpSlRopSlArf023a4EhMqIqIxAJ5LAZAA88nAz45rQqy6HpN/Y3xkvbOSJQoLdwAbc4xkeR96sZyuo3OndZfp0yMxdZGG6MAh1DejY9x81itNQl1HVJ7iZtxaLBbABbnycAD8AVI9V6ZNe3tk+nWyPGbCEyMhUZfBBzz5wBWnbaReaeJJ5rcpFtwXDqfb2NacrxY+u+23Tmjyxftu7Oxt5YnHB2kYYZ9vB+1cyu7qW7l3yu7YGFDOW2/QZ5xnNX7qy1vdQtLJrGJ50Gk28e2LDHKhi3HngD+a51Wa6YcKUpUbKUpQZIApnjDlgpYZKDJAz6fWpufp6KG9sIP1wdbqV13onGwEbXHPO5SDj0qGsl33kChipMijcPI581Mm3a21mOzF5OUtEaVJBGAf6d4KgnwRt5+/iiV6ten7WbVLq0e9kWKGJJRKIQTghSxIz/aCfXnH1qMjtYG0ia87sgmimSLZtGDuDHOfhD+RU1Y2TyazOV1aSKeG9EfdEYBKKcBwM+jbBtH+XsDWhHYIenJbz9TIDv3GEINpIYKPXPhzzjA4HqKqbehoZXULWA3DJ37N7kMUwyMiuSpGf8AONhn2wfpUJVmt9PmXUtIt5ryVVu0LKxjB7Uj5DqQfPgZH+3iq5KVMrlM7SxxkAcfAqLHilKUUpSlB9VirBlOCDkGthL66SSOQTNuiXYhPOF54+OTWtSgzC6nEncEr79+/dnnd7/NBdTi2NsJWEJOSnoaw0oM63lykiSLM4dJDIpB8McZPzwPxWClKBSlKD//2Q==\"}],[\"lottery powerball jackpot\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"red rock casino million dollar jackpot\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"1595469284436841403\",\"q\":\"oN12M1nzvi9IQt5nG-VFexA4_pI\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756605369153": "p:*|l:2_[1756605369152]",
+      "hsb;;1756605369152": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756605370377&no_sw_cr=1\",\"metadata\":{\"entryId\":1756605369154,\"pushId\":1756605369152,\"stackId\":1756605369153,\"stackIndex\":0}}",
+      "_c;;i": "p:*|l:9007199254740991_5"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756605372336
+  },
+  "created": 1756605372337
+}

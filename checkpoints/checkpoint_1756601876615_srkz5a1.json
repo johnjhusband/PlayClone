@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756601876615_srkz5a1",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756601874688&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2hFiU-SSkCdM6-LhSSB6DYAd9tyJ77BHxlbN5Uo6FiyUuAC_vVOOQ",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772153873.581794,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=VCQEVZOI7awDtB_9CYMNyWZ-bM45KSSkZHiXWSNQ2Bl7LZs7OaVz6Ii_j8a43Nd_zjX8s8vwvKAPgByFcYKu03R_pGrmOYuFjJIQgl8gzuM_qwZHvXvtntQoe1E5IDCpuF0fK4dRbsFxHp5LcLrDochCThFik5Iszy0Yq1M_ZWUooKgN-jlAYG_mMqLOy7neKndPpIBaY3K5cbTZlv5jkTyGQQboVID05cI",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772413073.850835,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"walt disney world attractions\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"delta airlines cancels flights\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"nfl rivalries uniforms\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"sydney marathon results\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"steam uk age verification\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"baby dragon emote clash royale code\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"tesla model y performance\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"matheus cunha injury update\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"farmers almanac winter forecast\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"georgia\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"Georgia\",\"zi\":\"Country\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tDP1TdIMcjOM2D0Yk9PzS9Kz0wEADZWBds\"},\"zs\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA1CAMAAADh9px2AAAAYFBMVEX/////AAD/UFD/y8v/rKz/d3f/gID/x8f/8PD/2dn/hYX/6ur/0ND/FBT/Gxv/Hx//5eX/bm7/lZX/mpr/iYn/QED/amr/p6f/cnL/3t7/urr/LCz/+vr/CQn/Jyf/oaHxnRvpAAABDklEQVRYhe2XwQ6CQAxEO6ICgoCKCorw/38pUSMYWWaNPayRCadN+5IC7U5FqDw85fFoC03ADzVfLA/2wMNyMSfAI3C2B56BIwG22YU9sCBvwQ8kBFZShREHRmElKyCUwDcC25TL7XnJNAC9LnoM+FDMgXF3PAJc10CSAv0qDEAfSBOgXo8Ay0pKIBfJAg4MMpEcKKUqjcB79ub9yPSVN/xfb9pC7IFtyQ0Bnra73B6Y77YnAhyQY8PhJ4G9loh5tMyo9h1wz6N7/aujCTgBnQCqd4p6L3O5P74cA6rfeur3sq5zUPc2D/eV2LqvhLmv4Zb4yh8qO1h1jy3aW4B8uqfUfE9R36QG5Nhw+APgFe1zEUgrWQsiAAAAAElFTkSuQmCC\"}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"6962182788829678110\",\"q\":\"jeRIYaS71kUfDUV3SsWsernA7VE\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756601873326": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756601874688&no_sw_cr=1\",\"metadata\":{\"entryId\":1756601873328,\"pushId\":1756601873326,\"stackId\":1756601873327,\"stackIndex\":0}}",
+      "hsb;;1756601873327": "p:*|l:2_[1756601873326]",
+      "_c;;i": "p:*|l:9007199254740991_5"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756601876615
+  },
+  "created": 1756601876615
+}

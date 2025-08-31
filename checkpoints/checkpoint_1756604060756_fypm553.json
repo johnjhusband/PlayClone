@@ -1,0 +1,17 @@
+{
+  "id": "checkpoint_1756604060756_fypm553",
+  "name": "checkpoint",
+  "state": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "cookies": [],
+    "localStorage": {},
+    "sessionStorage": {},
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756604060756
+  },
+  "created": 1756604060756
+}

@@ -1,0 +1,148 @@
+{
+  "id": "checkpoint_1756597276038_ifkm35c",
+  "name": "test-nav-session",
+  "state": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "cookies": [
+      {
+        "name": "_gh_sess",
+        "value": "xRDSSwBASNCBzIJAa7wz5LaMvbFuacuuu01cQaIqnrgVUR400paTA8HDvs1jrk1iH2M%2Fkim47TSa01dbOhL5uQ7eEhatmrHnMzYEBLyZo7828CtSwf%2FkXDMYp2KmLxRpdrzSMojSTQfUkpETmfDgzETYpdr%2FUZ1%2F30B0Fqxh4Yp%2BluF1A1YDybGIgbOe7kZuKWQe%2BG%2BF%2BhbSqTysB%2BBP3GpjY8Q2Zu6rb3Ud3YM2CM9JNndHxyzGl9TpyPepdz2swsy5PppBszWUOlE%2BN%2B1SPQ%3D%3D--GCRpI%2FfQr%2BxHoHGH--smhKBCxI0CUDXjFTJnIaRQ%3D%3D",
+        "domain": "github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "_octo",
+        "value": "GH1.1.2114791686.1756597270",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788133273.855809,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "logged_in",
+        "value": "no",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788133273.85594,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "cpu_bucket",
+        "value": "lg",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "preferred_color_mode",
+        "value": "light",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "tz",
+        "value": "UTC",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "AEC",
+        "value": "AVh_V2hy0PAvGgFEcjzOSpj0b2kNFHagNeB0JaFOkNK9jNcu0PT6lB4ZHA",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772149275.651009,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=GDvJrxdmKKTaqR2eHTq9KcbZEB680N4tfET3vMbgMozWP0ECiDTjx9YmSJ8j_SJ6VLE3NxGbR1AeGkNJVJOKJMCX6WtziGtbDa9tax7oklPKyA96cCLK4Dpr7lFIPp7uEEjaHJkbTF2-Sw4qY4l-Tgv1NP2_QrKfLF-7Dlf9E_eNqW4cBu-t0voikCUVjMXRqTwssLRcTWRP3182ZVOHXW4",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772408475.651153,
+        "httpOnly": true,
+        "secure": false,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "WMF-Last-Access",
+        "value": "30-Aug-2025",
+        "domain": "www.wikipedia.org",
+        "path": "/",
+        "expires": 1759368211.943469,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "WMF-Last-Access-Global",
+        "value": "30-Aug-2025",
+        "domain": ".wikipedia.org",
+        "path": "/",
+        "expires": 1759368211.943525,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "GeoIP",
+        "value": "US:FL:Lake_Worth:26.60:-80.13:v4",
+        "domain": ".wikipedia.org",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NetworkProbeLimit",
+        "value": "0.001",
+        "domain": "www.wikipedia.org",
+        "path": "/",
+        "expires": 1756600875.943565,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "WMF-Uniq",
+        "value": "5blta6NpurS4CBFeA2HIewJfAAAAAFvddx8v32jvAt6z6CtMRtCbYk1w1n_NYIM6",
+        "domain": ".wikipedia.org",
+        "path": "/",
+        "expires": 1788096211.943583,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {},
+    "sessionStorage": {},
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756597276038
+  },
+  "created": 1756597276038
+}

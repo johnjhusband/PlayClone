@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756598954341_6ug0eyi",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756598952455&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2icbIJ6lFyAI5W4MSMdLkXnBhI2N8ZXLPcoPb74YOA_j8l448HNUAg",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772150951.426082,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=LMo4G3cgcxgzXZt55wLDFVTfYSEvKyXbChISseRok6WmL49RafhUlCXEZ3WK6EkK8CnnAXNvog2Dl8vdzOWwSMIfZQxtJyyK-IxETbYQwBbqaEkRL-rQdy_cBkwqF42Qv_DWxwZZqOWgHE5hjSQ1CdG6QTNzS24fKl8L3i7dEO5QR8c72WKrWbWjsfVnBr06nN9ud2ThXj7n6D_S5-Z1bqYqfdbC9a8kpSc",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772410151.271464,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"costco executive membership\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"new movies netflix september 2025\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"american flag half mast today\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"college football ohio state\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"college football ohio state\",\"zi\":\"Ohio State Buckeyes football — Football team\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tTP1TdIy6oqrjRg9JJOzs_JSU1PVUjLzy9JSszJUcjPyMxXKC5JLEkFABcKDjk\"},\"zs\":\"data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\"}],[\"lokah chapter 1 malayalam movie\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"lokah chapter 1 malayalam movie\",\"zi\":\"Lokah Chapter 1: Chandra — 2025 film\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tVP1zc0rMizyCqpMko2YPSSz8nPTsxQSM5ILChJLVIwVMhNzEmsBOJchdz8ssxUAHyREFo\"},\"zs\":\"data:image/jpeg;base64,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\"}],[\"leagues cup final miami sounders\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"fantasy football quinshon judkins\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"alaska pfd program stimulus payment\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"red sox baseball\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"clash royale baby dragon emote code\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"8580379160908211170\",\"q\":\"r8oC47diJFhXrEJjg8EzyM4XSkk\"}}"
+    },
+    "sessionStorage": {
+      "_c;;i": "p:*|l:9007199254740991_5",
+      "hsb;;1756598951238": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756598952455&no_sw_cr=1\",\"metadata\":{\"entryId\":1756598951240,\"pushId\":1756598951238,\"stackId\":1756598951239,\"stackIndex\":0}}",
+      "hsb;;1756598951239": "p:*|l:2_[1756598951238]"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756598954341
+  },
+  "created": 1756598954341
+}

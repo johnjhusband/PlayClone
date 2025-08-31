@@ -1,0 +1,17 @@
+{
+  "id": "checkpoint_1756604453714_tipih40",
+  "name": "example-home",
+  "state": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "cookies": [],
+    "localStorage": {},
+    "sessionStorage": {},
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756604453714
+  },
+  "created": 1756604453715
+}

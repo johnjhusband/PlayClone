@@ -1,0 +1,44 @@
+{
+  "id": "checkpoint_1756602979268_yui72n5",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://www.google.com/?zx=1756602977371&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "AEC",
+        "value": "AVh_V2jk_jYEvkHxOUQaCzUEgho0FV6bgfNUP_IHj0jZuF1vOCg6jtZ28Q",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772154976.499046,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=dduFlNsNfKMhTX23pLwek3GbACMhlOT9iu_qG43mIU49nyDPKfiDi08doQy_8A45KSKrPJtQngRSwH0r1XbPJ7WKh3RNVQ3jPrs5Tug-Y6JHXseXJezMsWHMvDrkfzVKClKGKa41kamyc6IF3eHaKi9uh8kAaNv0PveNGR88fZPpcfLQgFhQpoC9R3pwwoWEeygdD8MUwapvuYch7SN8SUoSlfogNF9dQQ",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772414176.538175,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"philadelphia eagles\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"Philadelphia Eagles\",\"zi\":\"Football team\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tDP1TcwLUk3NmD0Ei7IyMxJTEnNAdKJCqmJ6TmpxQCXKQpV\"},\"zs\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAAulBMVEX///8AAACgrK+ntLejr7IAMD2qtrpUWlzEy80AKznb3+CbqKsAOEUAOkTq7e56g4VGTE0AR1L4+fnj5ue9xcfP1dZqcnSMl5q0vb8AQEtCY2oAKS8AFRgANT0ACg7y8/SampoAICW3t7dfZmgAKDJxenyBi44aHB0AAAgAGSGRoKRPbXQAHS4vWGB1iY5adnwAFSIADxgjJSUwLSw8OzsAECMAABWPjY2CgYErNDalpaUXFBQcT1kAIS7ZbunHAAAEpElEQVRYhe1XWXuqShC0mWEdw44DGkFFNGLUk4STuMT//7duD6jR5CrmJI/Wg8yHUvRSXTM2GjfccMMNN/wqjJD8Glei5VNZfgx+RKLRHZnPZ3IzuutG7R+wGVyeimuQz2Tk6twDdOR/DtDL32V53jDJQm7KnT5UiKb/xuaStj7sR202wwt8oKN732QycvzQFvqfGO4dp/skWJ7tNBtxycLl3fybdNNZw8ybf+GlV8TdBwA7HeWSxBiTJOUZoN90v0ent7W2YEu8MYzVURgYnpm4jcQztFAE2PyOBr2FHjnOa/yGVVqOeZCUd11DU5iIkIgKzq6nS+Z6vxu9qr5YD3aV93yi+L4fSpiwChA3TfGKq/iY/gfgaXnaQhOfNQ2NIB8pOzLN522ZX0HnRw/2Enqf3+1hthKlRCHSCPnuu53JJHqvpzOnr2PN753edI2QMm61Urt4PtJh9wodMh16DTc5uWeEo9SGr7hv0jq6ZPb6Yn4KLkxXKxWlzCghCoJQKee8EFVc1PFpMiz3S7/MxuuNBp6oppuYXqCFpagliUoi4doCsi2sq9XaquI0jONYE4QX+EI2hZgT8yvFCeZbGFR0K+3TV14QiokrIWSTYgH1OudaDCs+Y6OevDrBQavkvAfJMGFduZJvDa0vWjCDkO6xk7XOavimQ1E/d7AE22+43pGqPZ9KfJSlqqqmaFy5UvqCVMPXHsIbXt5aAHngH1XHoJb6/EWBkTOnl0qYvPehJRYABYzyj9YaVgHPassacT6yWkfM99HjhRpqzQlkYjEANYXs0GIvXWUDwzBQf1QS9VMkq9iZ/wWzduc6VP0IAOaNdD9O7rpnin5ofhiGPlKWiiZsLAJ0zm+frNmHtJzdNWwA8PHqvhk03IDku9E4gHIRoBOd9UF9CNAT6a2fQW3BnQ97EbqGYaL/hdIpyp7I54fEcDqHSvfC+RI+mmdqtDQEQig9aFr05U6+4FoGNniTpWkLBYP5artUPNcjlGdqgRUbF6pFScW3EqYgG+f5Aj2GlFDFYmQE9tt6UOZiLgfa6NQBU3olH2xygj8sMkZZAa1BEAzeCkilMbQ4RfNjPFuVjBuJMJFvt3khX0+GVVkf4ZoYAFeFJmwLWlCo4pCgcqyfwktB21np+s4l03IeXsheDmL3IUoYYlRiWOFpMpkImr0bVJAvno4WE9i1j0hWaovoNnZGiQrx8D0Pw7kcIyMh/DBw+sVd098CLwkpO24AVaDvVONHUKQgif6X2ho6lz11HkMVnsgoxgRtMagFBuTsf6IfvKADEzm/SIdDNykjpFjsvj5lfFiE+GxG1KfDk3cV3+SdPb6z2lOHNgSLlsPUcYS0miAIcUPT99uyW0YYbxefd+r/h7sFlZTTXu1fMuCZSlXUp4MzBX+wFMPZ5y3rLKYxMCqRDTTF+5PHArklDvIhN386XeQX5uIzgkc0fELZeBLhuc3bphm0FNjWni/OQ9HvcS4438R/84YxSTM7LJ5+8s+j4U23eBB/2M5QYOajTcLi4bx1XklJ+ZxVZcKmvDxEdeeLb2ARo+B+ka8RbLe157PvgdcdV2644YYbbqjDf7KyYT4QZ64tAAAAAElFTkSuQmCC\"}],[\"massachusetts state flag finalists\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"craig jones cji 2\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"battlefield 6 anti cheat\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"de minimis exemption\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"atlantic hurricane season\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"lottery powerball jackpot\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"metallica stephen talkhouse concert\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"red rock casino million dollar jackpot\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"chase bank safety deposit boxes\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"6111941147341499313\",\"q\":\"cHrIXS-r_8u4xnwQ7B-wW6zgDIo\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756602976254": "p:*|l:4_{\"state\":null,\"url\":\"/?zx=1756602977371&no_sw_cr=1\",\"metadata\":{\"entryId\":1756602976256,\"pushId\":1756602976254,\"stackId\":1756602976255,\"stackIndex\":0}}",
+      "hsb;;1756602976255": "p:*|l:2_[1756602976254]",
+      "_c;;i": "p:*|l:9007199254740991_5"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756602979268
+  },
+  "created": 1756602979268
+}
