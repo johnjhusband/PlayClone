@@ -11,6 +11,8 @@ export { default } from './PlayClone';
 export { BrowserManager } from './core/BrowserManager';
 export { SessionManager } from './core/SessionManager';
 export { PlayCloneContext } from './core/PlayCloneContext';
+export { CookieManager } from './core/CookieManager';
+export { ExtensionManager } from './core/ExtensionManager';
 export { ElementLocator } from './selectors/ElementLocator';
 export { ActionExecutor } from './actions/ActionExecutor';
 export { DataExtractor } from './extractors/DataExtractor';
@@ -28,6 +30,28 @@ export { AIErrorReporter, ErrorPatternMatcher, type AIErrorReport } from './util
 
 // Export optimization utilities
 export { BrowserPrewarmer, getGlobalPrewarmer, startGlobalPrewarming, stopGlobalPrewarming } from './optimization/BrowserPrewarmer';
+export { ConnectionPool, getGlobalPool, closeGlobalPool, type PoolConfig, type PoolStats } from './optimization/ConnectionPool';
+export { PoolConfigManager, getPoolConfig, getConnectionPoolConfig, type ExtendedPoolConfig } from './config/PoolConfigManager';
+
+// Export configuration management
+export { ConfigManager, configManager, type PlayCloneConfig } from './config/ConfigManager';
+
+// Export plugin system
+export { PluginManager } from './plugins/PluginManager';
+export { BasePlugin } from './plugins/BasePlugin';
+export type {
+  PlayClonePlugin,
+  PluginMetadata,
+  PluginContext,
+  PluginConfig,
+  PluginLogger,
+  PluginStorage,
+  PluginAPI,
+  CommandHandler,
+  HookHandler,
+  SelectorHandler,
+  ExtractorHandler
+} from './plugins/PluginManager';
 
 // Re-export PlayCloneOptions from types
 export type { LaunchOptions as PlayCloneOptions } from './types';

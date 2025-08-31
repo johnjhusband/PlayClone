@@ -5,6 +5,7 @@
 import { Browser, BrowserContext, Page } from 'playwright-core';
 import { BrowserManager } from '../core/BrowserManager';
 import { PlayCloneError } from '../utils/errors';
+import { ConfigManager } from '../config/ConfigManager';
 
 /**
  * Pool connection state
@@ -60,17 +61,30 @@ export class ConnectionPool {
   private stats: PoolStats;
   private recycleTimer?: NodeJS.Timeout;
   private closed: boolean;
+  private configManager: ConfigManager;
+  private adaptiveScalingTimer?: NodeJS.Timeout;
+  private lastScaleAction: number = 0;
 
   constructor(config: Partial<PoolConfig> = {}) {
-    this.config = {
-      minConnections: 2,
-      maxConnections: 10,
-      maxIdleTime: 30000, // 30 seconds
-      maxLifetime: 300000, // 5 minutes
-      maxRequestsPerConnection: 100,
-      connectionTimeout: 10000, // 10 seconds
+    // Get configuration from manager
+    this.configManager = ConfigManager.getInstance();
+    const poolConfig = this.configManager.get('connectionPool') || {};
+    
+    // Map ConfigManager settings to PoolConfig
+    const defaultConfig: PoolConfig = {
+      minConnections: poolConfig.minSize || 1,
+      maxConnections: poolConfig.maxSize || 5,
+      maxIdleTime: poolConfig.idleTimeout || 300000,
+      maxLifetime: 3600000, // 1 hour default
+      maxRequestsPerConnection: 1000,
+      connectionTimeout: 30000,
       recycleOnError: true,
-      warmupOnStart: true,
+      warmupOnStart: poolConfig.preWarm || false,
+    };
+    
+    // Merge with provided config (provided config takes precedence)
+    this.config = {
+      ...defaultConfig,
       ...config,
     };
 
@@ -92,6 +106,11 @@ export class ConnectionPool {
 
     // Start maintenance cycle
     this.startMaintenanceCycle();
+
+    // Start adaptive scaling if enabled (check connection pool config)
+    if (poolConfig.enabled !== false) {
+      this.startAdaptiveScaling();
+    }
 
     // Warmup pool if configured
     if (this.config.warmupOnStart) {
@@ -407,14 +426,141 @@ export class ConnectionPool {
   }
 
   /**
+   * Start adaptive scaling
+   */
+  private startAdaptiveScaling(): void {
+    // Check scaling every 5 seconds
+    this.adaptiveScalingTimer = setInterval(() => {
+      this.performAdaptiveScaling();
+    }, 5000);
+  }
+
+  /**
+   * Perform adaptive scaling based on pool utilization
+   */
+  private async performAdaptiveScaling(): Promise<void> {
+    if (this.closed) return;
+
+    // Use default scaling settings for now
+    const scalingSettings = {
+      enabled: true,
+      scaleUpThreshold: 0.8,
+      scaleDownThreshold: 0.2
+    };
+    if (!scalingSettings.enabled) return;
+
+    // Calculate utilization
+    const utilization = this.stats.activeConnections / Math.max(this.connections.size, 1);
+    const now = Date.now();
+    
+    // Prevent rapid scaling actions (minimum 10 seconds between scales)
+    if (now - this.lastScaleAction < 10000) return;
+
+    // Scale up if utilization is high and we haven't reached max
+    if (utilization > scalingSettings.scaleUpThreshold && 
+        this.connections.size < this.config.maxConnections) {
+      const connectionsToAdd = Math.min(
+        2, // Add up to 2 connections at a time
+        this.config.maxConnections - this.connections.size
+      );
+      
+      console.log(`Scaling up: Adding ${connectionsToAdd} connections (utilization: ${(utilization * 100).toFixed(1)}%)`);
+      
+      for (let i = 0; i < connectionsToAdd; i++) {
+        await this.createConnection().catch(() => {});
+      }
+      
+      this.lastScaleAction = now;
+    }
+    
+    // Scale down if utilization is low and we're above minimum
+    else if (utilization < scalingSettings.scaleDownThreshold && 
+             this.connections.size > this.config.minConnections) {
+      const idleConnections = Array.from(this.connections.values())
+        .filter(conn => !conn.inUse)
+        .sort((a, b) => a.lastUsed - b.lastUsed);
+      
+      const connectionsToRemove = Math.min(
+        1, // Remove 1 connection at a time
+        this.connections.size - this.config.minConnections,
+        idleConnections.length
+      );
+      
+      if (connectionsToRemove > 0) {
+        console.log(`Scaling down: Removing ${connectionsToRemove} connections (utilization: ${(utilization * 100).toFixed(1)}%)`);
+        
+        for (let i = 0; i < connectionsToRemove; i++) {
+          await this.recycleConnection(idleConnections[i]);
+        }
+        
+        this.lastScaleAction = now;
+      }
+    }
+  }
+
+  /**
+   * Update pool configuration dynamically
+   */
+  updateConfig(newConfig: Partial<PoolConfig>): void {
+    // Update configuration manager with mapped config
+    this.configManager.updateSection('connectionPool', {
+      minSize: newConfig.minConnections,
+      maxSize: newConfig.maxConnections,
+      idleTimeout: newConfig.maxIdleTime,
+      preWarm: newConfig.warmupOnStart
+    });
+    
+    // Update local config
+    this.config = {
+      ...this.config,
+      ...newConfig
+    };
+    
+    // Validate against current state
+    this.validatePoolSize();
+  }
+
+  /**
+   * Validate and adjust pool size based on new configuration
+   */
+  private async validatePoolSize(): Promise<void> {
+    // Ensure we have minimum connections
+    while (this.connections.size < this.config.minConnections && !this.closed) {
+      await this.createConnection().catch(() => {});
+    }
+    
+    // Remove excess connections if above maximum
+    if (this.connections.size > this.config.maxConnections) {
+      const idleConnections = Array.from(this.connections.values())
+        .filter(conn => !conn.inUse)
+        .sort((a, b) => a.lastUsed - b.lastUsed);
+      
+      const toRemove = this.connections.size - this.config.maxConnections;
+      for (let i = 0; i < Math.min(toRemove, idleConnections.length); i++) {
+        await this.recycleConnection(idleConnections[i]);
+      }
+    }
+  }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): PoolConfig {
+    return { ...this.config };
+  }
+
+  /**
    * Close the pool
    */
   async close(): Promise<void> {
     this.closed = true;
 
-    // Clear maintenance timer
+    // Clear timers
     if (this.recycleTimer) {
       clearInterval(this.recycleTimer);
+    }
+    if (this.adaptiveScalingTimer) {
+      clearInterval(this.adaptiveScalingTimer);
     }
 
     // Reject waiting requests
@@ -462,7 +608,11 @@ let globalPool: ConnectionPool | null = null;
  */
 export function getGlobalPool(config?: Partial<PoolConfig>): ConnectionPool {
   if (!globalPool) {
-    globalPool = new ConnectionPool(config);
+    // Use provided config or empty config for defaults
+    globalPool = new ConnectionPool(config || {});
+  } else if (config) {
+    // Update existing pool configuration
+    globalPool.updateConfig(config);
   }
   return globalPool;
 }

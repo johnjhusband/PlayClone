@@ -1,0 +1,134 @@
+{
+  "id": "checkpoint_1756656712404_xp2icby",
+  "name": "firefox-test",
+  "state": {
+    "url": "https://www.google.com/?zx=1756656702437&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "__cf_bm",
+        "value": "wJv3Z9MOHXpJOQcbbLOUOKlzNwA4oIm1iMnFMAduV58-1756656695-1.0.1.1-S3n8.z4ayrxPy9SFAn3FULfLWCTKPkAvE.EPrpn.EPegwPavol01Y51gipwtHpBgNIoiHuXYv2QSVPKSg7ouAE8b5OLjrrIVHs5UsaI1YwU",
+        "domain": ".snigelweb.com",
+        "path": "/",
+        "expires": 1756658495,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_gh_sess",
+        "value": "Ea6Mft6Sr%2BKrU1t%2BVZIH2Q6jg%2B6bh9eN99HGv4sv9qswrgj8qPdC2UMNaGO%2BVSsqudW2by7y29w4PnfUMqfoHy7lwBUOrUDWkHOukh1jsHjH2y1KG5m3iIe%2B%2FDIC7LSgwJM46mm%2BUEMo3l2VEwFPLw2lbmVOMUG4R8uCI7EJrZIN%2FyhWP2yAo21Hj5pdSSqaqFZHVQdVc42eYLrKTBrJ5SeevHRzoeOCQZQQP1ApkT9WlWX%2Bcwh%2B41AHFvJigoMyyVtVIiyb6eLFHM5PkPR8rQ%3D%3D--bXVxzZb05eHdHv5L--zgn78YOs3TtiUb5eZEJrZA%3D%3D",
+        "domain": "github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "_octo",
+        "value": "GH1.1.1165213093.1756656707",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192712,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "logged_in",
+        "value": "no",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192712,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "cpu_bucket",
+        "value": "lg",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "preferred_color_mode",
+        "value": "light",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "tz",
+        "value": "UTC",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "AEC",
+        "value": "AVh_V2gDQXNVJjwqKqZzfVlnj1rHvSm9ITsRhP47FEdOIDD7A1RM_UQLySM",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772208701,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=k58F15AtP2-_GGy85F-aBUWzax-iHgke54U-WlauYmShuf4AkLrdjpZoH0Csr6p5fhSKF0yJfQuBDay6pm2IZ7qkYW93k66-nX1gZtzRl3XvPEpqhxsY0neIeV00wR5khbPLYpOVTAYVo2q2Hay5jQAB22GL4x0z92DBa5UivDvy2_eYBfZSdcQp05YdON9of_N__SHUqqHOi9GKoX07C6RCmM2a4uJnxLI",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772467901,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga",
+        "value": "GA1.1.1255598292.1756656697",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216697,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga_9YNMTB56NB",
+        "value": "GS2.1.s1756656697$o1$g0$t1756656701$j56$l0$h0",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216701,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"capricorn daily horoscope august 31 2025\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"browns quinshon judkins\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"nba 2k26 crossplay not working xbox\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"concernedape stardew valley update\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"dexter resurrection episode 10 leak\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"brent venables pay cut\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"walt disney animation studios hexed\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"craig jones invitational results\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"flip app shut down\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"pokemon legends za preorder bonus\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"1041741713164815621\",\"q\":\"U286XwsG4AKE8lNMA_AE-8brsfQ\"}}"
+    },
+    "sessionStorage": {
+      "_c;;i": "p:*|l:9007199254740991_7",
+      "hsb;;1756656701565": "p:*|l:5_[1756656701564]",
+      "hsb;;1756656701564": "p:*|l:6_{\"state\":null,\"url\":\"/?zx=1756656702437&no_sw_cr=1\",\"metadata\":{\"entryId\":1756656701566,\"pushId\":1756656701564,\"stackId\":1756656701565,\"stackIndex\":0}}"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756656712403
+  },
+  "created": 1756656712404
+}

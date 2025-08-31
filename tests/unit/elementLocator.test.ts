@@ -11,6 +11,11 @@ jest.mock('../../src/selectors/ElementNormalizer', () => ({
       attributes: {},
       position: null,
       action: null
+    })),
+    toSelectorHints: jest.fn((normalized) => ({
+      text: normalized.text || '',
+      type: normalized.type || 'button',
+      attributes: normalized.attributes || {}
     }))
   }))
 }));
@@ -251,7 +256,7 @@ describe('ElementLocator', () => {
       });
       mockLocator.isVisible.mockResolvedValue(true);
       mockLocator.isEnabled.mockResolvedValue(true);
-      mockLocator.evaluate.mockImplementation((fn: any) => {
+      mockLocator.evaluate.mockImplementation(() => {
         return Promise.resolve({
           tagName: 'BUTTON',
           className: 'btn btn-primary',
@@ -260,7 +265,7 @@ describe('ElementLocator', () => {
         });
       });
 
-      const info = await elementLocator.getElementInfo(mockPage, 'submit button');
+      const info = await elementLocator.getElementInfo(mockLocator);
 
       expect(info).toEqual({
         found: true,
@@ -284,7 +289,7 @@ describe('ElementLocator', () => {
     it('should handle non-existent element', async () => {
       mockLocator.count.mockResolvedValue(0);
 
-      const info = await elementLocator.getElementInfo(mockPage, 'non-existent');
+      const info = await elementLocator.getElementInfo(mockLocator);
 
       expect(info).toEqual({
         found: false,

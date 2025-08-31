@@ -12,6 +12,21 @@ export interface Viewport {
   hasTouch?: boolean;
 }
 
+export interface ProxyConfig {
+  server: string;  // e.g., "http://proxy.example.com:8080" or "socks5://proxy.example.com:1080"
+  bypass?: string; // Comma-separated list of hosts to bypass proxy for
+  username?: string;
+  password?: string;
+}
+
+export interface ExtensionConfig {
+  path?: string;           // Path to unpacked extension or CRX/ZIP file
+  url?: string;           // URL to download extension from
+  id?: string;            // Extension ID for Chrome Web Store
+  manifest?: any;         // Optional manifest overrides
+  permissions?: string[]; // Additional permissions to grant
+}
+
 export interface LaunchOptions {
   headless?: boolean;
   viewport?: Viewport;
@@ -22,6 +37,8 @@ export interface LaunchOptions {
   executablePath?: string;
   slowMo?: number;
   devtools?: boolean;
+  proxy?: ProxyConfig;
+  extensions?: ExtensionConfig[]; // Browser extensions to load
 }
 
 export interface ElementSelector {
@@ -103,4 +120,36 @@ export interface ErrorDetails {
   details?: any;
   suggestion?: string;
   recoverable: boolean;
+}
+
+export interface Cookie {
+  name: string;
+  value: string;
+  domain?: string;
+  path?: string;
+  expires?: number;
+  size?: number;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: 'Strict' | 'Lax' | 'None';
+  url?: string;
+}
+
+export interface CookieOptions {
+  domain?: string;
+  path?: string;
+  expires?: number;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: 'Strict' | 'Lax' | 'None';
+}
+
+export interface CookieResult {
+  success: boolean;
+  action: 'getCookies' | 'setCookie' | 'deleteCookie' | 'clearCookies';
+  cookies?: Cookie[];
+  cookie?: Cookie;
+  count?: number;
+  error?: string;
+  timestamp: number;
 }

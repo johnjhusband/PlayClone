@@ -1,0 +1,134 @@
+{
+  "id": "checkpoint_1756656612231_7v1gvwi",
+  "name": "firefox-test",
+  "state": {
+    "url": "https://www.google.com/?zx=1756656602744&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "__cf_bm",
+        "value": "82Y4ZE31KBN7bJUvd31cBibpxwrf29g1mJUOc5Mcqt8-1756656594-1.0.1.1-Wg3pU2NvCd3NBoE5J4xamajTjg0c3o2r3cauZxHl1kByS.f6C2l2B.vBrHurM6sUfvyBA_68nnZ8AmZG5MKuOITaoC4CpNI2mBUF9mYIvxk",
+        "domain": ".snigelweb.com",
+        "path": "/",
+        "expires": 1756658395,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_gh_sess",
+        "value": "pad32b7yQGfxeng9EEPq8iJVOtYkmleXQK5PbT4d9%2BgJ7uHQeJ3qEbGL6FJIPnDN1qpdPvoPLOa8LRreih%2FCRjhNlBlPDwdgLt8J0QrHTB5U8upKVOoyC4sBzdYDij1ddpym2TBTZz72eFXp%2FUlegAd6mpU8MTMcrGqEmAZM8DfvburV5vQDeOEYNnKUD9pn5%2F5M1k2pDAtp%2BHn1JI%2FRma1IfyFdVgp%2BTyRGwDQtDkoNw4FZBwooAnndyL0PhCUbpAH8%2F2hzlgUTCXE%2BDl2ujQ%3D%3D--63hCkxBS%2FrwQC4UG--q8Pe3XuaRwCbXgWEZhy6Rw%3D%3D",
+        "domain": "github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "_octo",
+        "value": "GH1.1.1405692410.1756656607",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192610,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "logged_in",
+        "value": "no",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192610,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "cpu_bucket",
+        "value": "lg",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "preferred_color_mode",
+        "value": "light",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "tz",
+        "value": "UTC",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "AEC",
+        "value": "AVh_V2h4W5e6Ed6FEdWBIvXHQNykG01fI88s-BArwqQFg5tS-K3pmMgK_Q",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772208601,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=VnZ6E-TjGPvldDEqiuMhC8R-S6dsuuLWwpPm4IbfWYw9YiCiqzF3tl3OYpovjM2y5740SeLWtcgtzL52K0_zTIPo0B6BRIbQU4Cz-UmkW5BGnMhnfNNDxIk4X8BhIJuokRL_3tcirktVYyLvdwHaDZ1OcS8Ee4W1X-AqkKLsv0Ub8MALaEwKpP5YVHviU1lmsYqWulE5OgIRCifDN3-77C2qaaalH8lbQQ",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772467801,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga",
+        "value": "GA1.1.2123692130.1756656597",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216596,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga_9YNMTB56NB",
+        "value": "GS2.1.s1756656596$o1$g0$t1756656601$j55$l0$h0",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216601,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"septa service cuts\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"craig jones invitational results\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"baby girl burning man\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"pacific classic horse racing del mar\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"salad kits recalled\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"30 year mortgage rates\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"labor day sales deals\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"dfw american airlines flight delays\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"college football texas ohio state\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"heart attack drugs\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"-8847616967913951972\",\"q\":\"NncUsu1d1D5ZlkRYkHU0G6CxxBM\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756656601727": "p:*|l:5_[1756656601726]",
+      "_c;;i": "p:*|l:9007199254740991_7",
+      "hsb;;1756656601726": "p:*|l:6_{\"state\":null,\"url\":\"/?zx=1756656602744&no_sw_cr=1\",\"metadata\":{\"entryId\":1756656601728,\"pushId\":1756656601726,\"stackId\":1756656601727,\"stackIndex\":0}}"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756656612230
+  },
+  "created": 1756656612231
+}

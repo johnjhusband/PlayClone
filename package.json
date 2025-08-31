@@ -13,12 +13,23 @@
     "dev": "tsx src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:self": "node tests/self-test-master.js",
+    "test:ai": "node tests/ai-assistant-tests.ts",
+    "test:stress": "node tests/performance/stress-test-suite.js",
+    "test:cross-browser": "node tests/cross-browser-compatibility.js",
+    "test:cross-browser:quick": "node tests/cross-browser-quick-test.js",
+    "test:cross-browser:matrix": "node tests/cross-browser-matrix-test.js",
+    "perf:baseline": "node tests/performance/baseline-performance-test.js",
+    "perf:regression": "node tests/performance/performance-regression-test.js",
+    "perf:stress": "node tests/performance/stress-test-suite.js",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "demo": "tsx demo.ts",
-    "self-test": "tsx examples/playclone-self-test.ts"
+    "self-test": "tsx examples/playclone-self-test.ts",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "keywords": [
     "browser",
@@ -33,8 +44,10 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.4",
+    "@types/unzipper": "^0.10.11",
     "playwright": "^1.55.0",
-    "playwright-core": "^1.48.0"
+    "playwright-core": "^1.48.0",
+    "unzipper": "^0.12.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

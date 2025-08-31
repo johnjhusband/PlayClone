@@ -1,0 +1,1 @@
+console.log('PlayClone test extension loaded!');

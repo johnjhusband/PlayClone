@@ -9,9 +9,11 @@ import { ElementLocator } from './selectors/ElementLocator';
 import { ActionExecutor } from './actions/ActionExecutor';
 import { DataExtractor } from './extractors/DataExtractor';
 import { StateManager } from './state/StateManager';
+import { CookieManager } from './core/CookieManager';
 import { formatResponse } from './utils/responseFormatter';
-import { LaunchOptions, ActionResult, ExtractedData, PageState } from './types';
+import { LaunchOptions, ActionResult, ExtractedData, PageState, Cookie, CookieResult } from './types';
 import { SearchEngineHandler } from './utils/searchEngineHandler';
+import { PluginManager } from './plugins/PluginManager';
 
 /**
  * Main PlayClone class - Provides AI-friendly browser automation
@@ -24,10 +26,14 @@ export class PlayClone {
   private actionExecutor: ActionExecutor | null = null;
   private dataExtractor: DataExtractor | null = null;
   private stateManager: StateManager | null = null;
+  private cookieManager: CookieManager | null = null;
+  private pluginManager: PluginManager;
   private initialized: boolean = false;
   constructor(options: LaunchOptions = {}) {
     this.browserManager = new BrowserManager(options);
     this.sessionManager = new SessionManager((options as any).sessionPath);
+    this.pluginManager = new PluginManager((options as any).pluginStorageDir);
+    this.pluginManager.setPlayClone(this);
   }
 
   /**
@@ -53,6 +59,7 @@ export class PlayClone {
     this.actionExecutor = new ActionExecutor(this.elementLocator);
     this.dataExtractor = new DataExtractor();
     this.stateManager = new StateManager((this.sessionManager as any).savePath);
+    this.cookieManager = new CookieManager();
 
     this.initialized = true;
   }
@@ -806,13 +813,424 @@ export class PlayClone {
   }
 
   /**
+   * Get cookies from the browser
+   */
+  async getCookies(options?: { domain?: string; name?: string; url?: string }): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'getCookies' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'getCookies' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.getCookies(context, options);
+  }
+
+  /**
+   * Set a cookie
+   */
+  async setCookie(cookie: Cookie): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.setCookie(context, cookie);
+  }
+
+  /**
+   * Set multiple cookies
+   */
+  async setCookies(cookies: Cookie[]): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.setCookies(context, cookies);
+  }
+
+  /**
+   * Delete a cookie
+   */
+  async deleteCookie(name: string, options?: { domain?: string; path?: string }): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'deleteCookie' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'deleteCookie' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.deleteCookie(context, name, options);
+  }
+
+  /**
+   * Clear all cookies
+   */
+  async clearCookies(): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'clearCookies' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'clearCookies' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.clearCookies(context);
+  }
+
+  /**
+   * Get cookie value by name
+   */
+  async getCookieValue(name: string, options?: { domain?: string }): Promise<string | null> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return null;
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return null;
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.getCookieValue(context, name, options);
+  }
+
+  /**
+   * Check if a cookie exists
+   */
+  async hasCookie(name: string, options?: { domain?: string }): Promise<boolean> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return false;
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return false;
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.hasCookie(context, name, options);
+  }
+
+  /**
+   * Export cookies to JSON
+   */
+  async exportCookies(): Promise<string> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      throw new Error('Cookie manager not initialized');
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      throw new Error('No active page');
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.exportCookies(context);
+  }
+
+  /**
+   * Import cookies from JSON
+   */
+  async importCookies(cookiesJson: string): Promise<CookieResult> {
+    await this.ensureInitialized();
+    if (!this.cookieManager) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'Cookie manager not initialized',
+        timestamp: Date.now()
+      };
+    }
+    
+    const page = this.browserManager.getPage();
+    if (!page) {
+      return {
+        success: false,
+        action: 'setCookie' as const,
+        error: 'No active page',
+        timestamp: Date.now()
+      };
+    }
+    
+    const context = page.context();
+    return await this.cookieManager.importCookies(context, cookiesJson);
+  }
+
+  /**
+   * Load a browser extension
+   */
+  async loadExtension(config: any): Promise<ActionResult> {
+    await this.ensureInitialized();
+    return await this.browserManager.loadExtension(config);
+  }
+
+  /**
+   * Get list of loaded extensions
+   */
+  getExtensions(): any[] {
+    return this.browserManager.getExtensions();
+  }
+
+  /**
+   * Enable or disable an extension
+   */
+  setExtensionEnabled(extensionId: string, enabled: boolean): ActionResult {
+    const extensionManager = this.browserManager.getExtensionManager();
+    if (!extensionManager) {
+      return formatResponse({
+        success: false,
+        action: 'setExtensionEnabled',
+        error: 'Extension manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return extensionManager.setExtensionEnabled(extensionId, enabled);
+  }
+
+  /**
+   * Remove an extension
+   */
+  removeExtension(extensionId: string): ActionResult {
+    const extensionManager = this.browserManager.getExtensionManager();
+    if (!extensionManager) {
+      return formatResponse({
+        success: false,
+        action: 'removeExtension',
+        error: 'Extension manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return extensionManager.removeExtension(extensionId);
+  }
+
+  /**
+   * Load a plugin from file path
+   */
+  async loadPlugin(pluginPath: string, config?: any): Promise<ActionResult> {
+    try {
+      await this.pluginManager.loadPlugin(pluginPath, config);
+      return formatResponse({
+        success: true,
+        action: 'loadPlugin',
+        value: `Plugin loaded from ${pluginPath}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatResponse({
+        success: false,
+        action: 'loadPlugin',
+        error: error instanceof Error ? error.message : 'Failed to load plugin',
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
+   * Load a plugin from npm package
+   */
+  async loadPluginFromNpm(packageName: string, config?: any): Promise<ActionResult> {
+    try {
+      await this.pluginManager.loadPluginFromNpm(packageName, config);
+      return formatResponse({
+        success: true,
+        action: 'loadPluginFromNpm',
+        value: `Plugin loaded from npm: ${packageName}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatResponse({
+        success: false,
+        action: 'loadPluginFromNpm',
+        error: error instanceof Error ? error.message : 'Failed to load npm plugin',
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
+   * Unload a plugin
+   */
+  async unloadPlugin(pluginName: string): Promise<ActionResult> {
+    try {
+      await this.pluginManager.unloadPlugin(pluginName);
+      return formatResponse({
+        success: true,
+        action: 'unloadPlugin',
+        value: `Plugin ${pluginName} unloaded`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatResponse({
+        success: false,
+        action: 'unloadPlugin',
+        error: error instanceof Error ? error.message : 'Failed to unload plugin',
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
+   * Execute a plugin command
+   */
+  async executePluginCommand(commandName: string, args: any): Promise<ActionResult> {
+    try {
+      const page = this.browserManager.getPage();
+      const pluginContext = page ? {
+        browser: this.browserManager,
+        page
+      } : {
+        browser: this.browserManager
+      };
+      const result = await this.pluginManager.executeCommand(commandName, args, pluginContext);
+      return formatResponse({
+        success: true,
+        action: 'executePluginCommand',
+        value: result,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatResponse({
+        success: false,
+        action: 'executePluginCommand',
+        error: error instanceof Error ? error.message : 'Command execution failed',
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
+   * Get list of loaded plugins
+   */
+  getPlugins(): Array<{ name: string; version: string; enabled: boolean }> {
+    const plugins = this.pluginManager.getPlugins();
+    const result: Array<{ name: string; version: string; enabled: boolean }> = [];
+    
+    for (const [name, plugin] of plugins) {
+      result.push({
+        name: plugin.metadata.name,
+        version: plugin.metadata.version,
+        enabled: this.pluginManager.isPluginEnabled(name)
+      });
+    }
+    
+    return result;
+  }
+
+  /**
+   * Get available plugin commands
+   */
+  getPluginCommands(): string[] {
+    return this.pluginManager.getCommands();
+  }
+
+  /**
+   * Enable or disable a plugin
+   */
+  setPluginEnabled(pluginName: string, enabled: boolean): ActionResult {
+    try {
+      this.pluginManager.setPluginEnabled(pluginName, enabled);
+      return formatResponse({
+        success: true,
+        action: 'setPluginEnabled',
+        value: `Plugin ${pluginName} ${enabled ? 'enabled' : 'disabled'}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatResponse({
+        success: false,
+        action: 'setPluginEnabled',
+        error: error instanceof Error ? error.message : 'Failed to update plugin state',
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
    * Close the browser
    */
   async close(): Promise<void> {
     if (this.context) {
       await this.context.close();
     }
-    await this.browserManager.close();
+    await this.browserManager.cleanup();
     this.initialized = false;
   }
 }

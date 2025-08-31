@@ -1,0 +1,52 @@
+{
+  "browser": {
+    "defaultBrowser": "chromium",
+    "headless": false,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timeout": 30000,
+    "slowMo": 0,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  },
+  
+  "connectionPool": {
+    "enabled": true,
+    "minSize": 2,
+    "maxSize": 10,
+    "idleTimeout": 300000,
+    "preWarm": true,
+    "preWarmCount": 3,
+    "reuseStrategy": "round-robin"
+  },
+  
+  "performance": {
+    "cacheEnabled": true,
+    "cacheSize": 200,
+    "cacheTTL": 7200000,
+    "memoryLimit": 1024,
+    "compressionEnabled": true
+  },
+  
+  "proxy": {
+    "server": "http://proxy.example.com:8080",
+    "username": "user",
+    "password": "pass",
+    "bypass": ["localhost", "127.0.0.1", "*.internal.com"]
+  },
+  
+  "ai": {
+    "responseOptimization": true,
+    "maxResponseSize": 1024,
+    "naturalLanguage": true,
+    "autoRetry": true,
+    "retryCount": 5
+  },
+  
+  "logging": {
+    "level": "debug",
+    "file": "playclone.log",
+    "console": true
+  }
+}

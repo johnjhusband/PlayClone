@@ -1,0 +1,134 @@
+{
+  "id": "checkpoint_1756656774516_nwykmto",
+  "name": "firefox-test",
+  "state": {
+    "url": "https://www.google.com/?zx=1756656764681&no_sw_cr=1",
+    "title": "Google",
+    "cookies": [
+      {
+        "name": "__cf_bm",
+        "value": "2uhBS88RdrZoKqhaAbTOQ11LDtarayZBb9O55IKT94Y-1756656756-1.0.1.1-RXIL0hMPedXpUyKY.LB1EisKd6rjWKTQOqYVxZSrRD9kCl05np5plTiSLfUiLohJiX3pTvqZmpeHom_j0Bm0yal4.BrQk2URHtiLFR5fzM4",
+        "domain": ".snigelweb.com",
+        "path": "/",
+        "expires": 1756658557,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_gh_sess",
+        "value": "XhE0BewT8fzawj8chNDqBGcpc1a1wQcr0EalJS0W%2F%2B2u95Vo1DA95N73OSQSWv30FG2aPS9adyyx7LkWI7WPkhlatPXCHAB1boxDKz2rJEhzM0Wc0Ce26KhSyqQKdjFepCeY6JZFxZXazxPcGDhMjCI9wheW7OO%2B7ahn4c%2Fct21Hbk89UMLtxej3o%2BBNSLYAjL1twkPLcJHPnS0srGiEMZhIv9XeOxAnS4EkSLwwew6uCiQaVJHgcRUz3MiW%2BVBQYrg0vKorT%2FJ8S2ygb6RuOg%3D%3D--Vw4u4mrSgPOUNOfY--JHaXfsL2qiGadkQMZpDTqA%3D%3D",
+        "domain": "github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "_octo",
+        "value": "GH1.1.1397390746.1756656769",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192772,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "logged_in",
+        "value": "no",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": 1788192772,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "cpu_bucket",
+        "value": "lg",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "preferred_color_mode",
+        "value": "light",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "tz",
+        "value": "UTC",
+        "domain": ".github.com",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "AEC",
+        "value": "AVh_V2gPgZBOTrSk4kHJLiznuPXaREgbBN2vqo13aZ3Bu9xRbqUeMLtjIkc",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772208763,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "NID",
+        "value": "525=kGceGIUYZCNFFb17YQGn0pPsTfqcI_jTi5SeHDnNcWxUtgM9s1xf8AEma2slqe8fSrUhJd910bEY6WXbBMDku3fMhVIg_tyTmk7FLaS2M5I6DGWiVW1BQm7PO1JNk-L4cVPu9vU3Nxu4FVdvsOh8Xgzma8S_ShPxw6c_xtYP9jEfwm7EJ9UpRIVBG0PQe6yQYcBpObkWV1jLjd9JmbiJJj2fGRGKSse4zw",
+        "domain": ".google.com",
+        "path": "/",
+        "expires": 1772467963,
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga",
+        "value": "GA1.1.580337231.1756656759",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216758,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      },
+      {
+        "name": "_ga_9YNMTB56NB",
+        "value": "GS2.1.s1756656758$o1$g0$t1756656763$j55$l0$h0",
+        "domain": ".w3schools.com",
+        "path": "/",
+        "expires": 1791216763,
+        "httpOnly": false,
+        "secure": false,
+        "sameSite": "None"
+      }
+    ],
+    "localStorage": {
+      "sb_wiz.zpc.gws-wiz.": "{\"0\":[[\"baby dragon emote clash royale code\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"pam bondi\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"Pam Bondi\",\"zi\":\"United States Attorney General\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tTP1TdItkgzyzFg9OIsSMxVSMrPS8kEAEcGBqA\"},\"zs\":\"data:image/jpeg;base64,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\"}],[\"google gmail data breach warning\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"aspen to houston skywest flight diverted\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"blizzard lawsuit against turtle wow\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"minnesota state fair protest\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"capricorn daily horoscope august 31 2025\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"nba 2k26 crossplay not working xbox\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"concernedape stardew valley update\",0,[3,362,143],{\"zf\":33,\"zl\":8,\"zp\":{\"gs_ss\":\"1\"}}],[\"san francisco 49ers\",46,[3,362,143],{\"lm\":[],\"zf\":33,\"zh\":\"San Francisco 49ers\",\"zi\":\"Football team\",\"zl\":8,\"zp\":{\"gs_ssp\":\"eJzj4tDP1TcwK8qrNGD0Ei5OzFNIK0rMS84sTs5XMLFMLSoGAJluChw\"},\"zs\":\"data:image/png;base64,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\"}]],\"1\":{\"ag\":{\"a\":{\"8\":[\"Trending searches\"]}},\"av\":\"2897555147345086137\",\"q\":\"ObHxFSVe9AoY1NQIdGggQ4VsEw8\"}}"
+    },
+    "sessionStorage": {
+      "hsb;;1756656763517": "p:*|l:5_[1756656763516]",
+      "hsb;;1756656763516": "p:*|l:6_{\"state\":null,\"url\":\"/?zx=1756656764681&no_sw_cr=1\",\"metadata\":{\"entryId\":1756656763518,\"pushId\":1756656763516,\"stackId\":1756656763517,\"stackIndex\":0}}",
+      "_c;;i": "p:*|l:9007199254740991_7"
+    },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756656774515
+  },
+  "created": 1756656774516
+}

@@ -6,6 +6,7 @@ import { chromium, firefox, webkit, Browser, BrowserContext, Page } from 'playwr
 import { LaunchOptions, BrowserType, ActionResult } from '../types';
 import { formatResponse } from '../utils/responseFormatter';
 import { AdvancedTimeoutManager } from '../utils/advancedTimeout';
+import { ExtensionManager } from './ExtensionManager';
 
 export class BrowserManager {
   private browser: Browser | null = null;
@@ -14,6 +15,7 @@ export class BrowserManager {
   private options: LaunchOptions;
   private browserType: BrowserType;
   private timeoutManager: AdvancedTimeoutManager | null = null;
+  private extensionManager: ExtensionManager | null = null;
 
   constructor(options: LaunchOptions = {}) {
     this.options = {
@@ -25,8 +27,14 @@ export class BrowserManager {
       args: options.args ?? [],
       slowMo: options.slowMo ?? 0,
       devtools: options.devtools ?? false,
+      extensions: options.extensions ?? [],
     };
     this.browserType = this.options.browser!;
+    
+    // Initialize extension manager if extensions are provided
+    if (this.options.extensions && this.options.extensions.length > 0) {
+      this.extensionManager = new ExtensionManager();
+    }
   }
 
   /**
@@ -36,23 +44,90 @@ export class BrowserManager {
     try {
       const startTime = Date.now();
       
+      // Load extensions if provided
+      if (this.extensionManager && this.options.extensions) {
+        for (const extensionConfig of this.options.extensions) {
+          const result = await this.extensionManager.loadExtension(extensionConfig);
+          if (!result.success) {
+            console.warn(`Failed to load extension: ${result.error}`);
+          }
+        }
+      }
+      
       // Select browser engine
       const browserEngine = this.getBrowserEngine();
       
+      // Configure proxy settings if provided
+      const launchArgs = [...(this.options.args || [])];
+      let proxySettings: any = {};
+      
+      if (this.options.proxy) {
+        // For launch-level proxy (Chromium/Firefox)
+        if (this.browserType !== 'webkit') {
+          if (this.options.proxy.server) {
+            launchArgs.push(`--proxy-server=${this.options.proxy.server}`);
+          }
+          if (this.options.proxy.bypass) {
+            launchArgs.push(`--proxy-bypass-list=${this.options.proxy.bypass}`);
+          }
+        }
+        
+        // For context-level proxy (all browsers)
+        proxySettings = {
+          server: this.options.proxy.server,
+          bypass: this.options.proxy.bypass,
+          username: this.options.proxy.username,
+          password: this.options.proxy.password,
+        };
+      }
+
+      // Add extension arguments if using Chromium
+      if (this.extensionManager && this.browserType === 'chromium') {
+        const extensionArgs = this.extensionManager.getBrowserArgs();
+        launchArgs.push(...extensionArgs);
+        
+        // Extensions require headed mode
+        if (extensionArgs.length > 0 && this.options.headless) {
+          console.warn('Extensions require headed mode. Setting headless: false');
+          this.options.headless = false;
+        }
+      }
+      
+      // Prepare Firefox preferences if needed
+      let firefoxPrefs = {};
+      if (this.extensionManager && this.browserType === 'firefox') {
+        firefoxPrefs = this.extensionManager.getFirefoxPreferences();
+      }
+      
       // Launch browser
-      this.browser = await browserEngine.launch({
+      const launchOptions: any = {
         headless: this.options.headless,
-        args: this.options.args,
+        args: launchArgs,
         slowMo: this.options.slowMo,
         devtools: this.options.devtools,
         executablePath: this.options.executablePath,
-      });
+        proxy: this.browserType === 'webkit' ? proxySettings : undefined, // WebKit uses launch-level proxy
+      };
+      
+      // Add Firefox preferences if available
+      if (this.browserType === 'firefox' && Object.keys(firefoxPrefs).length > 0) {
+        launchOptions.firefoxUserPrefs = firefoxPrefs;
+      }
+      
+      this.browser = await browserEngine.launch(launchOptions);
 
       // Create context with options
-      this.context = await this.browser.newContext({
+      const contextOptions: any = {
         viewport: this.options.viewport,
         userAgent: this.options.userAgent,
-      });
+      };
+      
+      // Add proxy for non-WebKit browsers at context level
+      if (this.options.proxy && this.browserType !== 'webkit') {
+        contextOptions.proxy = proxySettings;
+      }
+      
+      this.context = await this.browser.newContext(contextOptions);
 
       // Set default timeout
       this.context.setDefaultTimeout(this.options.timeout!);
@@ -358,5 +433,65 @@ export class BrowserManager {
    */
   isActive(): boolean {
     return this.browser !== null && this.browser.isConnected();
+  }
+
+  /**
+   * Get extension manager instance
+   */
+  getExtensionManager(): ExtensionManager | null {
+    return this.extensionManager;
+  }
+
+  /**
+   * Load an extension dynamically (after browser launch)
+   */
+  async loadExtension(config: any): Promise<ActionResult> {
+    if (!this.extensionManager) {
+      this.extensionManager = new ExtensionManager();
+    }
+
+    const result = await this.extensionManager.loadExtension(config);
+    
+    if (result.success && this.page) {
+      // Try to install in running browser if supported
+      await this.extensionManager.installInBrowser(this.page, result.value.path);
+    }
+
+    return result;
+  }
+
+  /**
+   * Get list of loaded extensions
+   */
+  getExtensions(): any[] {
+    if (!this.extensionManager) {
+      return [];
+    }
+    return this.extensionManager.getExtensions();
+  }
+
+  /**
+   * Clean up resources including extensions
+   */
+  async cleanup(): Promise<void> {
+    try {
+      // Close browser
+      if (this.browser) {
+        await this.browser.close();
+        this.browser = null;
+      }
+
+      // Clean up extensions
+      if (this.extensionManager) {
+        this.extensionManager.cleanup();
+        this.extensionManager = null;
+      }
+
+      this.context = null;
+      this.page = null;
+      this.timeoutManager = null;
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
   }
 }

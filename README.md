@@ -27,6 +27,8 @@ AI-Native Browser Automation Framework - Control browsers with natural language,
 - 📝 **TypeScript First** - Full type safety and excellent IDE support
 - 🔍 **Search Engine Automation** - Built-in support for Google, DuckDuckGo, Bing with anti-bot bypass
 - ⏱️ **Advanced Timeout Handling** - Adaptive timeouts for complex SPAs and heavy sites
+- 🦊 **Multi-Browser Support** - Works with Chromium, Firefox, and WebKit (Safari) browsers
+- 🧩 **Browser Extension Support** - Load and manage browser extensions dynamically
 
 ## 🚀 Quick Start
 
@@ -35,6 +37,22 @@ AI-Native Browser Automation Framework - Control browsers with natural language,
 ```bash
 npm install playclone
 ```
+
+### Browser Support
+
+PlayClone supports multiple browser engines:
+
+| Browser | Status | Installation | Notes |
+|---------|--------|--------------|-------|
+| **Chromium** | ✅ Fully Supported | `npx playwright install chromium` | Default browser, best compatibility |
+| **Firefox** | ✅ Fully Supported | `npx playwright install firefox` | 90% test pass rate |
+| **WebKit** | ⚠️ Supported* | `npx playwright install webkit` | Safari engine, requires system dependencies |
+
+**WebKit (Safari) Requirements:**
+- WebKit support is implemented but requires additional system dependencies
+- On Linux: Install with `sudo npx playwright install-deps webkit`
+- On macOS: Works out of the box
+- Required packages: `libevent-2.1-7`, `libgstreamer-plugins-bad1.0-0`, `libflite1`, `libavif16`
 
 ### Try the Demo
 
@@ -61,8 +79,20 @@ node tests/self-tests/master.self-test.js
 ```typescript
 import { PlayClone } from 'playclone';
 
-// Initialize PlayClone
+// Initialize PlayClone (defaults to Chromium)
 const pc = new PlayClone({ headless: false });
+
+// Or use Firefox browser
+const pcFirefox = new PlayClone({ 
+  browser: 'firefox', 
+  headless: false 
+});
+
+// Or use WebKit (Safari engine)
+const pcWebKit = new PlayClone({ 
+  browser: 'webkit', 
+  headless: false 
+});
 
 // Navigate to a website
 await pc.navigate('https://example.com');
@@ -81,6 +111,111 @@ console.log(title.data); // "Welcome to Example"
 // Close browser
 await pc.close();
 ```
+
+## 🔐 Proxy Support
+
+PlayClone supports HTTP, HTTPS, and SOCKS5 proxies with authentication:
+
+```typescript
+// Basic HTTP proxy
+const pc = new PlayClone({
+  proxy: {
+    server: 'http://proxy.example.com:8080',
+    bypass: 'localhost,127.0.0.1,*.internal.com'
+  }
+});
+
+// Proxy with authentication
+const pc = new PlayClone({
+  proxy: {
+    server: 'http://proxy.example.com:8080',
+    username: 'proxyuser',
+    password: 'proxypass'
+  }
+});
+
+// SOCKS5 proxy
+const pc = new PlayClone({
+  proxy: {
+    server: 'socks5://socks-proxy.example.com:1080',
+    username: 'socksuser',
+    password: 'sockspass'
+  }
+});
+```
+
+### Proxy Configuration Options
+
+- **server**: Proxy server URL (required)
+  - HTTP/HTTPS: `http://proxy:8080` or `https://proxy:8443`
+  - SOCKS: `socks5://proxy:1080` or `socks4://proxy:1080`
+- **bypass**: Comma-separated list of hosts to bypass proxy
+  - Supports wildcards: `*.local`, `192.168.*`
+- **username**: Proxy authentication username (optional)
+- **password**: Proxy authentication password (optional)
+
+## 🍪 Cookie Management
+
+PlayClone provides comprehensive cookie management capabilities:
+
+```typescript
+// Set a cookie
+await pc.setCookie({
+  name: 'session_id',
+  value: 'abc123',
+  domain: 'example.com',
+  path: '/',
+  secure: true,
+  httpOnly: false
+});
+
+// Get all cookies
+const cookies = await pc.getCookies();
+console.log(`Found ${cookies.count} cookies`);
+
+// Get specific cookie
+const sessionCookie = await pc.getCookies({ name: 'session_id' });
+
+// Get cookie value directly
+const sessionId = await pc.getCookieValue('session_id');
+
+// Check if cookie exists
+if (await pc.hasCookie('auth_token')) {
+  console.log('User is authenticated');
+}
+
+// Set multiple cookies at once
+await pc.setCookies([
+  { name: 'theme', value: 'dark', domain: 'example.com' },
+  { name: 'lang', value: 'en', domain: 'example.com' }
+]);
+
+// Delete a specific cookie
+await pc.deleteCookie('session_id');
+
+// Clear all cookies
+await pc.clearCookies();
+
+// Export cookies to JSON
+const cookieJson = await pc.exportCookies();
+fs.writeFileSync('cookies.json', cookieJson);
+
+// Import cookies from JSON
+const savedCookies = fs.readFileSync('cookies.json', 'utf8');
+await pc.importCookies(savedCookies);
+```
+
+### Cookie API Methods
+
+- **setCookie(cookie)**: Set a single cookie
+- **setCookies(cookies[])**: Set multiple cookies
+- **getCookies(options?)**: Get all or filtered cookies
+- **getCookieValue(name)**: Get cookie value by name
+- **hasCookie(name)**: Check if cookie exists
+- **deleteCookie(name)**: Delete a specific cookie
+- **clearCookies()**: Clear all cookies
+- **exportCookies()**: Export cookies as JSON string
+- **importCookies(json)**: Import cookies from JSON
 
 ## 🎯 Natural Language Selectors
 
@@ -146,6 +281,97 @@ await pc.navigate('https://duckduckgo.com');
 ```
 
 The framework learns from each site visit and optimizes future timeouts.
+
+## 🧩 Browser Extensions
+
+PlayClone supports loading browser extensions for enhanced functionality:
+
+```javascript
+// Load extensions at launch
+const pc = new PlayClone({
+  headless: false,  // Extensions require headed mode
+  browser: 'chromium',
+  extensions: [
+    {
+      // Load from local path
+      path: './my-extension',
+      permissions: ['tabs', 'storage']  // Optional: additional permissions
+    },
+    {
+      // Load from Chrome Web Store
+      id: 'fmkadmapgofadopljbjfkapdkoienihi'  // React DevTools
+    },
+    {
+      // Load from URL
+      url: 'https://example.com/extension.zip'
+    }
+  ]
+});
+
+// Or load extensions dynamically
+const result = await pc.loadExtension({
+  path: './another-extension'
+});
+
+// Manage extensions
+const extensions = pc.getExtensions();  // List all extensions
+pc.setExtensionEnabled(extensionId, false);  // Disable extension
+pc.removeExtension(extensionId);  // Remove extension
+```
+
+### Extension Features:
+- **Multiple Sources**: Local path, Chrome Web Store, or URL
+- **Dynamic Loading**: Load extensions after browser launch
+- **Management API**: Enable/disable/remove extensions
+- **Manifest Overrides**: Modify extension permissions on the fly
+- **Chromium Only**: Currently supports Chromium-based browsers
+
+### Use Cases:
+- **Ad Blockers**: Load uBlock Origin or AdBlock Plus
+- **Developer Tools**: React/Vue/Angular DevTools
+- **Automation Helpers**: Custom extensions for scraping
+- **Privacy Tools**: VPN or privacy-focused extensions
+
+## 🔌 Plugin System
+
+PlayClone features a powerful plugin architecture for extending functionality:
+
+```javascript
+// Load a local plugin
+await pc.loadPlugin('./plugins/analytics-plugin.js', {
+  enabled: true,
+  priority: 10,
+  settings: { autoTrack: true }
+});
+
+// Load from npm
+await pc.loadPluginFromNpm('@playclone/seo-analyzer');
+
+// Execute plugin commands
+const analytics = await pc.executePluginCommand('getAnalytics', {});
+console.log(analytics.data); // { navigations: 5, clicks: 12, ... }
+
+// List loaded plugins
+const plugins = pc.getPlugins();
+console.log(plugins); // [{ name: 'analytics', version: '1.0.0', enabled: true }, ...]
+```
+
+### Plugin Features:
+- **Lifecycle Hooks**: onBeforeNavigate, onAfterClick, onError, etc.
+- **Custom Commands**: Add new functionality via plugin commands
+- **Data Extractors**: Create specialized data extraction methods
+- **Persistent Storage**: Plugins have their own storage system
+- **Event System**: Inter-plugin communication via events
+- **Hot Reload**: Enable/disable plugins without restart
+
+### Available Plugins:
+- **Analytics Plugin**: Track automation events and performance
+- **SEO Analyzer**: Analyze pages for SEO best practices
+- **Screenshot Comparer**: Visual regression testing
+- **Data Validator**: Validate extracted data against schemas
+- **Request Interceptor**: Modify network requests/responses
+
+See [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT.md) for creating custom plugins.
 
 ## Core Components
 
@@ -232,6 +458,82 @@ interface PlayCloneOptions {
 - `saveCheckpoint(name?: string)` - Save current state
 - `restoreCheckpoint(name: string)` - Restore saved state
 - `listCheckpoints()` - List available checkpoints
+
+## Connection Pool Configuration
+
+PlayClone includes a sophisticated connection pool system with adaptive scaling and multiple configuration options:
+
+### Configuration Methods
+
+#### 1. Environment Variables
+```bash
+# Basic pool settings
+export PLAYCLONE_POOL_MIN_CONNECTIONS=2
+export PLAYCLONE_POOL_MAX_CONNECTIONS=10
+export PLAYCLONE_POOL_MAX_IDLE_TIME=30000
+export PLAYCLONE_POOL_CONNECTION_TIMEOUT=10000
+
+# Adaptive scaling
+export PLAYCLONE_POOL_ADAPTIVE_SCALING=true
+export PLAYCLONE_POOL_SCALE_UP_THRESHOLD=0.8
+export PLAYCLONE_POOL_SCALE_DOWN_THRESHOLD=0.2
+
+# Advanced settings
+export PLAYCLONE_POOL_PRE_WARM=true
+export PLAYCLONE_POOL_PRE_WARM_COUNT=2
+export PLAYCLONE_POOL_METRICS=true
+```
+
+#### 2. Configuration File
+Create `playclone.config.json` in your project root:
+```json
+{
+  "pool": {
+    "minConnections": 2,
+    "maxConnections": 10,
+    "adaptiveScaling": true,
+    "scaleUpThreshold": 0.8,
+    "scaleDownThreshold": 0.2,
+    "maxIdleTime": 30000,
+    "warmupOnStart": true
+  }
+}
+```
+
+#### 3. Programmatic Configuration
+```typescript
+import { PoolConfigManager, getGlobalPool } from 'playclone';
+
+// Update configuration at runtime
+const configManager = PoolConfigManager.getInstance();
+configManager.updateConfig({
+  minConnections: 3,
+  maxConnections: 15,
+  adaptiveScaling: true
+});
+
+// Or configure when creating pool
+const pool = getGlobalPool({
+  minConnections: 1,
+  maxConnections: 5,
+  maxIdleTime: 15000
+});
+```
+
+### Adaptive Scaling
+When enabled, the pool automatically adjusts the number of connections based on usage:
+- **Scale Up**: Adds connections when utilization > scaleUpThreshold
+- **Scale Down**: Removes idle connections when utilization < scaleDownThreshold
+- Prevents rapid scaling with cooldown periods
+
+### Pool Statistics
+Monitor pool performance with built-in metrics:
+```typescript
+const stats = pool.getStats();
+console.log('Active connections:', stats.activeConnections);
+console.log('Connection reuse rate:', stats.connectionReuse);
+console.log('Average wait time:', stats.averageWaitTime);
+```
 
 ## Natural Language Examples
 

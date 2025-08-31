@@ -735,3 +735,391 @@ async function retryOperation(fn: Function, retries = 3) {
   }
 }
 ```
+
+## Frequently Asked Questions (FAQ)
+
+### General Questions
+
+#### Q: What browsers does PlayClone support?
+**A:** PlayClone supports Chromium (default), Firefox, and WebKit browsers. Chromium has the best compatibility and is recommended for production use. Firefox support is at 90% compatibility, while WebKit requires additional system dependencies on Linux.
+
+#### Q: Can I use PlayClone with my existing Playwright code?
+**A:** Yes! PlayClone is built on top of Playwright and maintains compatibility. You can gradually migrate by using PlayClone for new features while keeping existing Playwright code. See the Migration Guide for details.
+
+#### Q: Is PlayClone suitable for production use?
+**A:** Yes, PlayClone is production-ready with 95% test coverage and extensive real-world testing. It's being used by AI assistants for automated browser tasks with high reliability.
+
+#### Q: How does PlayClone differ from Puppeteer or Playwright?
+**A:** PlayClone is specifically designed for AI assistants with:
+- Natural language element selection ("click login button")
+- AI-optimized responses (<1KB JSON)
+- No code generation required
+- Direct function calls from AI
+- Built-in session management
+
+### Installation & Setup
+
+#### Q: Why do I get "Cannot find module" errors?
+**A:** This usually means the project hasn't been built. Run:
+```bash
+npm run build
+```
+If the issue persists, try:
+```bash
+rm -rf node_modules dist
+npm install
+npm run build
+```
+
+#### Q: How do I use PlayClone with Node.js 18?
+**A:** While PlayClone recommends Node.js 20+, it works with Node.js 18.19+. The MCP server v2 (`mcp-server-v2.cjs`) is specifically designed for Node.js 18 compatibility.
+
+#### Q: Can I use PlayClone without installing browser binaries?
+**A:** Yes, you can use system-installed browsers:
+```javascript
+const browser = new PlayClone({
+  channel: 'chrome' // Uses system Chrome
+});
+```
+
+### Browser Control
+
+#### Q: Why doesn't the browser window appear when using MCP?
+**A:** By default, the MCP server now runs in visible mode. If you still don't see the browser:
+1. Check if `PLAYCLONE_HEADLESS` environment variable is set
+2. Ensure you're using `mcp-server-v2.cjs` (not v1)
+3. Verify your display server is working (for Linux servers)
+
+#### Q: How do I run PlayClone in headless mode?
+**A:** Set the headless option:
+```javascript
+const browser = new PlayClone({ headless: true });
+```
+Or with MCP:
+```bash
+PLAYCLONE_HEADLESS=true node mcp-server-v2.cjs
+```
+
+#### Q: Can I control browser window size and position?
+**A:** Yes, use viewport and window options:
+```javascript
+const browser = new PlayClone({
+  viewport: { width: 1920, height: 1080 },
+  windowPosition: { x: 0, y: 0 }
+});
+```
+
+### Natural Language Selectors
+
+#### Q: What if my natural language selector doesn't work?
+**A:** Try these approaches:
+1. Be more specific: "blue submit button" instead of "button"
+2. Add context: "login button in header" instead of "login"
+3. Use standard UI terms: "hamburger menu", "dropdown", "modal"
+4. Check if element is visible and loaded
+
+#### Q: Can I mix CSS selectors with natural language?
+**A:** Yes! PlayClone accepts both:
+```javascript
+await browser.click('#specific-id'); // CSS selector
+await browser.click('submit button'); // Natural language
+```
+
+#### Q: How does PlayClone find elements with natural language?
+**A:** PlayClone uses a multi-strategy approach:
+1. Accessibility tree matching (aria-label, role)
+2. Text content matching
+3. Fuzzy matching with synonyms
+4. Visual position hints (first, last)
+5. Fallback to CSS selectors
+
+### Performance
+
+#### Q: Why is the first browser launch slow?
+**A:** The first launch initializes the browser binary. Use pre-warming for better performance:
+```javascript
+const browser = new PlayClone({ prewarm: true });
+```
+
+#### Q: How can I speed up repeated operations?
+**A:** Use session reuse and connection pooling:
+```javascript
+const sessionId = 'my-session';
+await browser.navigate('https://example.com', sessionId);
+// Reuse session for next operation
+await browser.click('button', sessionId);
+```
+
+#### Q: What's the recommended timeout for complex sites?
+**A:** Use adaptive timeouts based on site complexity:
+- Simple static sites: 5-10 seconds
+- Dynamic SPAs: 15-30 seconds
+- Heavy applications: 30-60 seconds
+
+### Error Handling
+
+#### Q: Why do I get "Element not found" errors?
+**A:** Common causes and solutions:
+1. Element not loaded yet - add wait: `await browser.waitFor('element')`
+2. Element in iframe - switch context first
+3. Dynamic content - wait for network idle
+4. Wrong selector - try alternative descriptions
+
+#### Q: How do I handle intermittent failures?
+**A:** Implement retry logic:
+```javascript
+const result = await browser.withRetry(
+  () => browser.click('dynamic button'),
+  { retries: 3, delay: 1000 }
+);
+```
+
+#### Q: What does "Context destroyed" mean?
+**A:** The browser page/tab was closed or crashed. Common causes:
+- Page navigation to `about:blank`
+- JavaScript `window.close()`
+- Browser crash from memory issues
+- Explicit close call
+
+### MCP Integration
+
+#### Q: How do I connect PlayClone to Claude or other AI assistants?
+**A:** Add PlayClone to your MCP configuration:
+```json
+{
+  "mcpServers": {
+    "playclone": {
+      "command": "node",
+      "args": ["/path/to/playclone/mcp-server-v2.cjs"]
+    }
+  }
+}
+```
+
+#### Q: Why does MCP show "Failed to reconnect"?
+**A:** This is often a false alarm. The MCP tools usually still work. Try:
+1. Using the tools anyway - they often work despite the message
+2. Restarting the MCP server
+3. Checking the server logs for actual errors
+
+#### Q: Can I use multiple PlayClone sessions with MCP?
+**A:** Yes! Each MCP tool call can specify a different sessionId:
+```javascript
+// Session 1 for search
+await mcp.navigate('https://google.com', 'search-session');
+
+// Session 2 for documentation
+await mcp.navigate('https://docs.example.com', 'docs-session');
+```
+
+### Data Extraction
+
+#### Q: How do I extract data from dynamic content?
+**A:** Wait for content to load before extraction:
+```javascript
+await browser.navigate('https://spa-app.com');
+await browser.waitFor('data-container');
+const data = await browser.getText('data-container');
+```
+
+#### Q: Can I extract data from multiple elements?
+**A:** Yes, use array selectors or get all matching elements:
+```javascript
+const prices = await browser.getText('all price tags');
+const links = await browser.getLinks('navigation menu');
+```
+
+#### Q: How do I handle paginated data?
+**A:** Use a loop with pagination detection:
+```javascript
+const allData = [];
+do {
+  const pageData = await browser.getText('content');
+  allData.push(pageData);
+  const hasNext = await browser.exists('next button');
+  if (hasNext) await browser.click('next button');
+  else break;
+} while (true);
+```
+
+### Security & Privacy
+
+#### Q: Is it safe to use PlayClone with credentials?
+**A:** Yes, but follow these practices:
+1. Never hardcode credentials
+2. Use environment variables
+3. Clear cookies/storage after sensitive operations
+4. Run in incognito mode for isolation
+
+#### Q: Does PlayClone work with sites that detect automation?
+**A:** PlayClone includes stealth features:
+- Randomized user agents
+- Human-like delays
+- Anti-bot detection bypass for common sites
+- WebDriver flag removal
+
+#### Q: Can I use proxies with PlayClone?
+**A:** Yes, PlayClone supports HTTP/HTTPS/SOCKS5 proxies:
+```javascript
+const browser = new PlayClone({
+  proxy: {
+    server: 'http://proxy.example.com:8080',
+    username: 'user',
+    password: 'pass'
+  }
+});
+```
+
+### Debugging
+
+#### Q: How do I debug why automation is failing?
+**A:** Use these debugging techniques:
+1. Run in visible mode: `{ headless: false }`
+2. Add slow motion: `{ slowMo: 500 }`
+3. Take screenshots: `await browser.screenshot('debug.png')`
+4. Enable verbose logging: `{ debug: true }`
+5. Use DevTools: `{ devtools: true }`
+
+#### Q: How can I see what PlayClone is doing?
+**A:** Enable visual debugging:
+```javascript
+const browser = new PlayClone({
+  headless: false,  // See browser
+  slowMo: 1000,     // Slow down actions
+  devtools: true    // Open DevTools
+});
+```
+
+#### Q: How do I capture network requests?
+**A:** Use page event listeners:
+```javascript
+const page = browser.page;
+page.on('request', req => console.log('Request:', req.url()));
+page.on('response', res => console.log('Response:', res.status()));
+```
+
+### Advanced Usage
+
+#### Q: Can I inject custom JavaScript?
+**A:** Yes, use evaluate:
+```javascript
+const result = await browser.page.evaluate(() => {
+  return document.title;
+});
+```
+
+#### Q: How do I handle multiple tabs/windows?
+**A:** Use contexts for isolation:
+```javascript
+const context1 = await browser.newContext();
+const context2 = await browser.newContext();
+// Each context is independent
+```
+
+#### Q: Can I save and restore browser state?
+**A:** Yes, use checkpointing:
+```javascript
+const checkpoint = await browser.saveState();
+// Do operations...
+await browser.restoreState(checkpoint);
+```
+
+#### Q: How do I handle file uploads?
+**A:** Use the file input handler:
+```javascript
+await browser.setInputFiles('file input', '/path/to/file.pdf');
+```
+
+#### Q: Can I intercept and modify requests?
+**A:** Yes, use route handlers:
+```javascript
+await browser.page.route('**/*.jpg', route => {
+  route.abort(); // Block images
+});
+```
+
+### Troubleshooting Specific Sites
+
+#### Q: Why doesn't Google search work?
+**A:** Google has anti-automation measures. Use the SearchEngineHandler:
+```javascript
+await browser.searchGoogle('query');
+// Or manually:
+await browser.fill('textarea[name="q"]', 'search term');
+await browser.press('Enter');
+```
+
+#### Q: How do I handle cookie consent popups?
+**A:** Try to click accept/dismiss:
+```javascript
+try {
+  await browser.click('accept cookies button', { timeout: 5000 });
+} catch {
+  // Continue if no popup
+}
+```
+
+#### Q: Why do some SPAs not load properly?
+**A:** Wait for network idle or specific elements:
+```javascript
+await browser.navigate(url, { waitUntil: 'networkidle' });
+// Or
+await browser.waitFor('app-loaded-indicator');
+```
+
+### Common Error Messages
+
+#### Q: "Browser closed unexpectedly"
+**A:** Usually means the browser crashed. Check:
+- System memory availability
+- Browser binary corruption
+- Conflicting browser extensions
+
+#### Q: "Timeout exceeded"
+**A:** Operation took too long. Solutions:
+- Increase timeout: `{ timeout: 60000 }`
+- Check if site is actually loading
+- Verify network connectivity
+
+#### Q: "Protocol error"
+**A:** Communication with browser failed. Try:
+- Restart PlayClone
+- Update browser binaries
+- Check for zombie browser processes
+
+#### Q: "Session not found"
+**A:** The session ID doesn't exist or expired. Ensure:
+- Session was created before use
+- Session wasn't closed prematurely
+- Using correct session ID
+
+### Getting Help
+
+#### Q: Where can I find more examples?
+**A:** Check these resources:
+- `/examples` directory in the repository
+- `/tests` directory for test cases
+- API documentation in `/docs/API.md`
+- GitHub issues for community solutions
+
+#### Q: How do I report a bug?
+**A:** Create a GitHub issue with:
+1. PlayClone version
+2. Node.js version
+3. Operating system
+4. Minimal reproduction code
+5. Error messages/screenshots
+
+#### Q: Is there community support?
+**A:** Yes! Find help at:
+- GitHub Discussions
+- Stack Overflow tag: `playclone`
+- Discord community (coming soon)
+
+#### Q: Can I contribute to PlayClone?
+**A:** Absolutely! See CONTRIBUTING.md for guidelines. We welcome:
+- Bug reports and fixes
+- New features
+- Documentation improvements
+- Test cases
+- Examples

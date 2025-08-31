@@ -1,0 +1,17 @@
+{
+  "id": "checkpoint_1756662823114_upynxyt",
+  "name": "test-checkpoint",
+  "state": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "cookies": [],
+    "localStorage": {},
+    "sessionStorage": {},
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "timestamp": 1756662823113
+  },
+  "created": 1756662823115
+}
