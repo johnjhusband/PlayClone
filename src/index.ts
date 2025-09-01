@@ -14,6 +14,7 @@ export { PlayCloneContext } from './core/PlayCloneContext';
 export { CookieManager } from './core/CookieManager';
 export { ExtensionManager } from './core/ExtensionManager';
 export { TabManager, TabInfo, TabResult } from './core/TabManager';
+export { DownloadManager, DownloadOptions, DownloadResult, DownloadProgress } from './browser/DownloadManager';
 export { ElementLocator } from './selectors/ElementLocator';
 export { ActionExecutor } from './actions/ActionExecutor';
 export { DataExtractor } from './extractors/DataExtractor';

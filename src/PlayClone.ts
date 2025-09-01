@@ -15,6 +15,7 @@ import { LaunchOptions, ActionResult, ExtractedData, PageState, Cookie, CookieRe
 import { SearchEngineHandler } from './utils/searchEngineHandler';
 import { PluginManager } from './plugins/PluginManager';
 import { IframeHandler } from './browser/IframeHandler';
+import { DownloadManager, DownloadOptions, DownloadResult, DownloadProgress } from './browser/DownloadManager';
 
 /**
  * Main PlayClone class - Provides AI-friendly browser automation
@@ -30,6 +31,7 @@ export class PlayClone {
   private cookieManager: CookieManager | null = null;
   private pluginManager: PluginManager;
   private iframeHandler: IframeHandler | null = null;
+  private downloadManager: DownloadManager | null = null;
   private initialized: boolean = false;
   constructor(options: LaunchOptions = {}) {
     this.browserManager = new BrowserManager(options);
@@ -63,6 +65,7 @@ export class PlayClone {
     this.stateManager = new StateManager((this.sessionManager as any).savePath);
     this.cookieManager = new CookieManager();
     this.iframeHandler = new IframeHandler(page);
+    this.downloadManager = new DownloadManager(page, (this.browserManager as any).options?.downloadDir);
 
     this.initialized = true;
   }
@@ -1528,6 +1531,102 @@ export class PlayClone {
       error: result.result ? undefined : 'Failed to navigate in iframe',
       timestamp: Date.now()
     };
+  }
+
+  /**
+   * Trigger and manage a file download
+   */
+  async download(urlOrSelector: string, options?: DownloadOptions): Promise<DownloadResult> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return {
+        success: false,
+        error: 'Download manager not initialized'
+      };
+    }
+    return await this.downloadManager.triggerDownload(urlOrSelector, options);
+  }
+
+  /**
+   * Get download progress by ID
+   */
+  async getDownloadProgress(downloadId: string): Promise<DownloadProgress | null> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return null;
+    }
+    return this.downloadManager.getProgress(downloadId);
+  }
+
+  /**
+   * Get all downloads progress
+   */
+  async getAllDownloads(): Promise<DownloadProgress[]> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return [];
+    }
+    return this.downloadManager.getAllProgress();
+  }
+
+  /**
+   * Get active downloads
+   */
+  async getActiveDownloads(): Promise<DownloadProgress[]> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return [];
+    }
+    return this.downloadManager.getActiveDownloads();
+  }
+
+  /**
+   * Cancel a download
+   */
+  async cancelDownload(downloadId: string): Promise<DownloadResult> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return {
+        success: false,
+        error: 'Download manager not initialized'
+      };
+    }
+    return await this.downloadManager.cancelDownload(downloadId);
+  }
+
+  /**
+   * Wait for a download to complete
+   */
+  async waitForDownload(downloadId: string, timeout?: number): Promise<DownloadResult> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return {
+        success: false,
+        error: 'Download manager not initialized'
+      };
+    }
+    return await this.downloadManager.waitForDownload(downloadId, timeout);
+  }
+
+  /**
+   * Set download directory
+   */
+  async setDownloadDirectory(directory: string): Promise<void> {
+    await this.ensureInitialized();
+    if (this.downloadManager) {
+      this.downloadManager.setDownloadDirectory(directory);
+    }
+  }
+
+  /**
+   * Get download statistics
+   */
+  async getDownloadStats(): Promise<any> {
+    await this.ensureInitialized();
+    if (!this.downloadManager) {
+      return null;
+    }
+    return this.downloadManager.getStatistics();
   }
 
   /**
