@@ -14,6 +14,7 @@ import { formatResponse } from './utils/responseFormatter';
 import { LaunchOptions, ActionResult, ExtractedData, PageState, Cookie, CookieResult } from './types';
 import { SearchEngineHandler } from './utils/searchEngineHandler';
 import { PluginManager } from './plugins/PluginManager';
+import { IframeHandler } from './browser/IframeHandler';
 
 /**
  * Main PlayClone class - Provides AI-friendly browser automation
@@ -28,6 +29,7 @@ export class PlayClone {
   private stateManager: StateManager | null = null;
   private cookieManager: CookieManager | null = null;
   private pluginManager: PluginManager;
+  private iframeHandler: IframeHandler | null = null;
   private initialized: boolean = false;
   constructor(options: LaunchOptions = {}) {
     this.browserManager = new BrowserManager(options);
@@ -60,6 +62,7 @@ export class PlayClone {
     this.dataExtractor = new DataExtractor();
     this.stateManager = new StateManager((this.sessionManager as any).savePath);
     this.cookieManager = new CookieManager();
+    this.iframeHandler = new IframeHandler(page);
 
     this.initialized = true;
   }
@@ -1217,6 +1220,144 @@ export class PlayClone {
         timestamp: Date.now()
       });
     }
+  }
+
+  /**
+   * List all iframes on the current page
+   */
+  async listIframes(): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'listIframes',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.listIframes();
+    return {
+      success: result.result ? true : false,
+      action: 'listIframes',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to list iframes',
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Switch context to an iframe
+   */
+  async switchToIframe(selector: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'switchToIframe',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.switchToIframe(selector);
+    return {
+      success: result.result ? true : false,
+      action: 'switchToIframe',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to switch to iframe',
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Switch context back to main frame
+   */
+  async switchToMainFrame(): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'switchToMainFrame',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.switchToMainFrame();
+    return {
+      success: result.result ? true : false,
+      action: 'switchToMainFrame',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to switch to main frame',
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Execute an action within an iframe
+   */
+  async executeInIframe(selector: string, action: string, ...args: any[]): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'executeInIframe',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.executeInIframe(selector, action, ...args);
+    return {
+      success: result.result ? true : false,
+      action: 'executeInIframe',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to execute in iframe',
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Wait for an iframe to be ready
+   */
+  async waitForIframe(selector: string, timeout?: number): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'waitForIframe',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.waitForIframe(selector, timeout);
+    return {
+      success: result.result ? true : false,
+      action: 'waitForIframe',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to wait for iframe',
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Navigate within an iframe
+   */
+  async navigateInIframe(selector: string, url: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    if (!this.iframeHandler) {
+      return {
+        success: false,
+        action: 'navigateInIframe',
+        error: 'Iframe handler not initialized',
+        timestamp: Date.now()
+      };
+    }
+    const result = await this.iframeHandler.navigateInIframe(selector, url);
+    return {
+      success: result.result ? true : false,
+      action: 'navigateInIframe',
+      value: result.result,
+      error: result.result ? undefined : 'Failed to navigate in iframe',
+      timestamp: Date.now()
+    };
   }
 
   /**

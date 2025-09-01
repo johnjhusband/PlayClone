@@ -153,3 +153,11 @@ export interface CookieResult {
   error?: string;
   timestamp: number;
 }
+
+export interface IframeInfo {
+  url: string;
+  name?: string;
+  selector?: string;
+  isDetached: boolean;
+  level: number;
+}
