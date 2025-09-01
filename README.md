@@ -282,6 +282,62 @@ await pc.navigate('https://duckduckgo.com');
 
 The framework learns from each site visit and optimizes future timeouts.
 
+## 🗂️ Tab Management
+
+PlayClone provides comprehensive multi-tab browser management:
+
+```typescript
+// Open a new tab
+const tab = await pc.openTab('https://example.com');
+console.log(`New tab ID: ${tab.value.tabId}`);
+
+// Open empty tab
+const emptyTab = await pc.openTab();
+
+// Switch between tabs by ID
+await pc.switchTab(tab.value.tabId);
+
+// Switch by index (0-based)
+await pc.switchTabByIndex(0);  // Switch to first tab
+
+// Get all open tabs
+const tabs = await pc.getTabs();
+tabs.value.tabs.forEach(tab => {
+  console.log(`Tab: ${tab.title} (${tab.active ? 'active' : 'inactive'})`);
+});
+
+// Navigate in specific tab
+await pc.navigateInTab(tab.value.tabId, 'https://google.com');
+
+// Find tab by title or URL
+const found = await pc.findTab('google');
+if (found.success) {
+  console.log(`Found tab: ${found.value.title}`);
+}
+
+// Duplicate current tab
+const duplicate = await pc.duplicateTab();
+
+// Reload specific tab
+await pc.reloadTab(tab.value.tabId);
+
+// Close specific tab
+await pc.closeTab(duplicate.value.tabId);
+
+// Close all tabs except current
+await pc.closeOtherTabs();
+```
+
+### Tab Management Features:
+- Open new tabs with or without URLs
+- Switch between tabs by ID or index
+- Navigate within specific tabs
+- Search tabs by title or URL
+- Duplicate existing tabs
+- Reload specific tabs
+- Close individual or multiple tabs
+- Get detailed tab information
+
 ## 🧩 Browser Extensions
 
 PlayClone supports loading browser extensions for enhanced functionality:

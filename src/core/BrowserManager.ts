@@ -7,6 +7,7 @@ import { LaunchOptions, BrowserType, ActionResult } from '../types';
 import { formatResponse } from '../utils/responseFormatter';
 import { AdvancedTimeoutManager } from '../utils/advancedTimeout';
 import { ExtensionManager } from './ExtensionManager';
+import { TabManager } from './TabManager';
 
 export class BrowserManager {
   private browser: Browser | null = null;
@@ -16,6 +17,7 @@ export class BrowserManager {
   private browserType: BrowserType;
   private timeoutManager: AdvancedTimeoutManager | null = null;
   private extensionManager: ExtensionManager | null = null;
+  private tabManager: TabManager | null = null;
 
   constructor(options: LaunchOptions = {}) {
     this.options = {
@@ -138,6 +140,10 @@ export class BrowserManager {
       
       // Initialize timeout manager with the page
       this.timeoutManager = new AdvancedTimeoutManager(this.page);
+      
+      // Initialize tab manager
+      this.tabManager = new TabManager();
+      await this.tabManager.initialize(this.browser, this.context);
 
       return formatResponse({
         success: true,
@@ -165,6 +171,11 @@ export class BrowserManager {
    */
   async close(): Promise<ActionResult> {
     try {
+      if (this.tabManager) {
+        await this.tabManager.cleanup();
+        this.tabManager = null;
+      }
+      
       if (this.page) {
         await this.page.close();
         this.page = null;
@@ -378,10 +389,23 @@ export class BrowserManager {
   }
 
   /**
-   * Get current page
+   * Get current page (active tab)
    */
   getPage(): Page | null {
+    // If we have a tab manager, return the active tab
+    if (this.tabManager) {
+      const activeTab = this.tabManager.getActiveTab();
+      if (activeTab) return activeTab;
+    }
+    // Fallback to the original page
     return this.page;
+  }
+  
+  /**
+   * Get the tab manager
+   */
+  getTabManager(): TabManager | null {
+    return this.tabManager;
   }
 
   /**

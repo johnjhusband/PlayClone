@@ -13,6 +13,7 @@ export { SessionManager } from './core/SessionManager';
 export { PlayCloneContext } from './core/PlayCloneContext';
 export { CookieManager } from './core/CookieManager';
 export { ExtensionManager } from './core/ExtensionManager';
+export { TabManager, TabInfo, TabResult } from './core/TabManager';
 export { ElementLocator } from './selectors/ElementLocator';
 export { ActionExecutor } from './actions/ActionExecutor';
 export { DataExtractor } from './extractors/DataExtractor';

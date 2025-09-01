@@ -761,6 +761,176 @@ export class PlayClone {
   }
 
   /**
+   * Open a new browser tab
+   */
+  async openTab(url?: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'openTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.openTab(url);
+  }
+
+  /**
+   * Switch to a specific tab by ID
+   */
+  async switchTab(tabId: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'switchTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.switchTab(tabId);
+  }
+
+  /**
+   * Switch to tab by index (0-based)
+   */
+  async switchTabByIndex(index: number): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'switchTabByIndex',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.switchTabByIndex(index);
+  }
+
+  /**
+   * Close a specific tab or the current tab
+   */
+  async closeTab(tabId?: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'closeTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.closeTab(tabId);
+  }
+
+  /**
+   * Get list of all open tabs
+   */
+  async getTabs(): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'getTabs',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.getTabs();
+  }
+
+  /**
+   * Navigate in a specific tab
+   */
+  async navigateInTab(tabId: string, url: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'navigateInTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.navigateInTab(tabId, url);
+  }
+
+  /**
+   * Reload a specific tab
+   */
+  async reloadTab(tabId?: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'reloadTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.reloadTab(tabId);
+  }
+
+  /**
+   * Duplicate a tab
+   */
+  async duplicateTab(tabId?: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'duplicateTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.duplicateTab(tabId);
+  }
+
+  /**
+   * Close all tabs except one
+   */
+  async closeOtherTabs(tabId?: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'closeOtherTabs',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.closeOtherTabs(tabId);
+  }
+
+  /**
+   * Find a tab by title or URL
+   */
+  async findTab(query: string): Promise<ActionResult> {
+    await this.ensureInitialized();
+    const tabManager = this.browserManager.getTabManager();
+    if (!tabManager) {
+      return formatResponse({
+        success: false,
+        action: 'findTab',
+        error: 'Tab manager not initialized',
+        timestamp: Date.now()
+      });
+    }
+    return await tabManager.findTab(query);
+  }
+
+  /**
    * Perform a search on a search engine with anti-automation bypass
    */
   async search(query: string): Promise<ActionResult> {
