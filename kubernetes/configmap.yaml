@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playclone-config
+  namespace: playclone
+data:
+  PLAYCLONE_PORT: "8080"
+  PLAYCLONE_HEADLESS: "true"
+  PLAYCLONE_MAX_SESSIONS_PER_WORKER: "10"
+  PLAYCLONE_HEALTH_CHECK_INTERVAL: "30000"
+  PLAYCLONE_SESSION_TIMEOUT: "300000"
+  PLAYCLONE_LOAD_BALANCING_STRATEGY: "least-connections"
+  PLAYCLONE_LOG_LEVEL: "info"
+  NODE_ENV: "production"

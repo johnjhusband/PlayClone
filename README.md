@@ -29,6 +29,7 @@ AI-Native Browser Automation Framework - Control browsers with natural language,
 - ⏱️ **Advanced Timeout Handling** - Adaptive timeouts for complex SPAs and heavy sites
 - 🦊 **Multi-Browser Support** - Works with Chromium, Firefox, and WebKit (Safari) browsers
 - 🧩 **Browser Extension Support** - Load and manage browser extensions dynamically
+- 🔄 **Selenium WebDriver Compatibility** - Drop-in replacement for existing Selenium code
 
 ## 🚀 Quick Start
 
@@ -388,6 +389,58 @@ pc.removeExtension(extensionId);  // Remove extension
 - **Automation Helpers**: Custom extensions for scraping
 - **Privacy Tools**: VPN or privacy-focused extensions
 
+## 📄 PDF Generation
+
+PlayClone can generate PDFs from web pages with extensive customization options:
+
+```typescript
+// Basic PDF generation
+const result = await pc.generatePdf({ format: 'A4' });
+const buffer = Buffer.from(result.value.buffer, 'base64');
+fs.writeFileSync('page.pdf', buffer);
+
+// Save PDF directly to file
+await pc.savePdf('output.pdf', {
+  format: 'Letter',
+  landscape: true,
+  printBackground: true
+});
+
+// Generate PDF with custom header and footer
+await pc.generatePdfWithHeaderFooter(
+  { format: 'A4' },
+  '<div style="font-size: 10px;">Document Title</div>',
+  '<div style="font-size: 10px;">Page <span class="pageNumber"></span></div>'
+);
+
+// Generate PDF of specific element
+await pc.generateElementPdf('#main-content', { format: 'A4' });
+
+// Generate PDF with table of contents
+await pc.generatePdfWithToc({
+  format: 'A4',
+  outline: true,
+  tagged: true
+});
+
+// Generate print-optimized PDF
+await pc.generatePrintOptimizedPdf({
+  format: 'Letter',
+  scale: 0.9
+});
+```
+
+### PDF Options
+
+- **format**: Paper format (A4, Letter, Legal, A3, A5, A6, etc.)
+- **landscape**: Landscape orientation
+- **printBackground**: Include background colors/images
+- **scale**: Scale factor (0.1 to 2)
+- **margin**: Page margins (top, right, bottom, left)
+- **pageRanges**: Specific pages to include (e.g., "1-5, 8, 11-13")
+- **displayHeaderFooter**: Show custom header/footer
+- **preferCSSPageSize**: Use CSS-defined page size
+
 ## 🔌 Plugin System
 
 PlayClone features a powerful plugin architecture for extending functionality:
@@ -429,6 +482,79 @@ console.log(plugins); // [{ name: 'analytics', version: '1.0.0', enabled: true }
 
 See [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT.md) for creating custom plugins.
 
+## Selenium WebDriver Compatibility
+
+PlayClone includes a **Selenium WebDriver compatibility layer** that allows you to run existing Selenium code with minimal changes. This makes migration from Selenium to PlayClone seamless!
+
+### Using Selenium Compatibility
+
+```javascript
+// Original Selenium code (commented out):
+// const { Builder, By, until } = require('selenium-webdriver');
+// const driver = await new Builder().forBrowser('chrome').build();
+
+// PlayClone Selenium compatibility:
+const { SeleniumWebDriver, By, Keys, WebDriverWait, ExpectedConditions } = require('playclone');
+
+// Create driver (Selenium style)
+const driver = new SeleniumWebDriver({ 
+  headless: false,
+  browserName: 'chromium' 
+});
+
+// Your existing Selenium code works as-is!
+await driver.get('https://www.google.com');
+const searchBox = await driver.findElement(By.name('q'));
+await searchBox.sendKeys('PlayClone browser automation');
+await searchBox.sendKeys(Keys.ENTER);
+
+// Use WebDriverWait for explicit waits
+const wait = new WebDriverWait(driver, 10000);
+const element = await wait.until(
+  ExpectedConditions.presenceOfElementLocated(By.tagName('h3'))
+);
+
+// Take screenshots
+const screenshot = await driver.getScreenshotAsBase64();
+
+// Manage cookies
+await driver.manage.addCookie({ name: 'test', value: '123' });
+const cookies = await driver.manage.getCookies();
+
+// Action chains for complex interactions
+await driver.actions()
+  .moveToElement(element)
+  .click()
+  .sendKeys('Hello World')
+  .perform();
+
+await driver.quit();
+```
+
+### Selenium API Support
+
+✅ **Fully Supported:**
+- Navigation: `get()`, `getCurrentUrl()`, `getTitle()`, `back()`, `forward()`, `refresh()`
+- Element finding: `findElement()`, `findElements()` with all By strategies
+- Element interactions: `click()`, `sendKeys()`, `clear()`, `getText()`, `getAttribute()`
+- JavaScript execution: `executeScript()`, `executeAsyncScript()`
+- Waits: `WebDriverWait`, `ExpectedConditions`
+- Screenshots: `getScreenshotAsBase64()`
+- Cookie management: Full cookie API
+- Window management: `getWindowHandle()`, `switchToWindow()`, `setSize()`
+- Action chains: Complex mouse and keyboard interactions
+- Timeouts: Implicit waits, page load timeout, script timeout
+
+### Migration Benefits
+
+- **No Code Rewrite**: Most Selenium code works without modification
+- **Better Performance**: PlayClone is faster than traditional Selenium
+- **AI Optimization**: Responses optimized for AI token limits
+- **Natural Language**: Use PlayClone's natural language features alongside Selenium API
+- **Modern Architecture**: Built on Playwright for better reliability
+
+See [examples/selenium-migration-example.js](examples/selenium-migration-example.js) for complete migration examples.
+
 ## Core Components
 
 ### BrowserManager
@@ -466,6 +592,44 @@ Manages browser state:
 - Compare states
 - Import/export sessions
 - Session persistence
+
+## Developer Tools
+
+### Visual Selector Builder 🎨
+
+PlayClone includes an interactive Visual Selector Builder UI that helps you create and test selectors visually:
+
+```javascript
+const { VisualSelectorBuilder } = require('playclone');
+
+// Start the Visual Selector Builder
+const builder = new VisualSelectorBuilder({
+  port: 8765,        // UI server port
+  host: 'localhost', // UI server host
+  autoOpen: true     // Auto-open in browser
+});
+
+await builder.start();
+```
+
+#### Features:
+- **Visual Element Selection**: Click on elements to generate selectors
+- **Multi-Mode Testing**: Test natural language, CSS, and XPath selectors
+- **Live Highlighting**: See matched elements highlighted on the page
+- **Code Generation**: Generate automation code in JavaScript, TypeScript, or Python
+- **Interactive Inspection**: Explore page elements and their properties
+- **Real-Time Testing**: Test selectors instantly without writing code
+
+#### Usage:
+1. Run the visual selector builder: `node examples/visual-selector-builder-demo.js`
+2. Open http://localhost:8765 in your browser
+3. Enter a URL and click "Connect" to open a browser
+4. Use the interface to:
+   - Test natural language selectors ("login button", "search box")
+   - Test CSS selectors ("#login-btn", ".search-input")
+   - Test XPath selectors ("//button[@id='login']")
+   - Generate automation code for selected elements
+   - Inspect page structure and element properties
 
 ## API Reference
 

@@ -1,0 +1,8 @@
+Timestamp,Type,Severity,Action,User,Session,Result,Resource
+2025-09-01T03:15:29.662Z,SYSTEM_START,INFO,System initialized,,,,
+2025-09-01T03:15:29.665Z,BROWSER_LAUNCHED,DEBUG,Chromium browser launched,,session-123,SUCCESS,chromium
+2025-09-01T03:15:29.666Z,LOGIN_ATTEMPT,INFO,User login attempted,user-456,,,github.com
+2025-09-01T03:15:29.666Z,LOGIN_SUCCESS,INFO,User login successful,user-456,session-789,SUCCESS,github.com
+2025-09-01T03:15:29.667Z,CREDENTIAL_ACCESSED,INFO,Credential retrieved,user-456,,,github-credentials
+2025-09-01T03:15:29.667Z,SECURITY_VIOLATION,CRITICAL,Unauthorized access attempt,,,FAILURE,/admin/users
+2025-09-01T03:15:29.668Z,DATA_EXTRACTED,INFO,Table data extracted,,session-123,SUCCESS,https://example.com/data

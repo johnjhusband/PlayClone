@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: playclone-ingress
+  namespace: playclone
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/websocket-services: "playclone-farm"
+    nginx.ingress.kubernetes.io/upstream-keepalive-connections: "50"
+spec:
+  tls:
+  - hosts:
+    - playclone.example.com
+    secretName: playclone-tls
+  rules:
+  - host: playclone.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: playclone-farm
+            port:
+              number: 80

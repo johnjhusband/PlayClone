@@ -1,0 +1,27 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="16" fill="#1e1e1e"/>
+  <g transform="translate(20, 20)">
+    <!-- Browser window -->
+    <rect x="0" y="0" width="88" height="60" rx="4" fill="#2d2d30" stroke="#007acc" stroke-width="2"/>
+    <!-- Browser bar -->
+    <rect x="0" y="0" width="88" height="12" rx="4" fill="#007acc"/>
+    <!-- Browser dots -->
+    <circle cx="8" cy="6" r="2" fill="#fff"/>
+    <circle cx="16" cy="6" r="2" fill="#fff"/>
+    <circle cx="24" cy="6" r="2" fill="#fff"/>
+    <!-- Play button -->
+    <g transform="translate(34, 28)">
+      <circle cx="10" cy="10" r="12" fill="#4caf50"/>
+      <path d="M 8 6 L 8 14 L 14 10 Z" fill="#fff"/>
+    </g>
+  </g>
+  <!-- Automation arrows -->
+  <path d="M 25 80 Q 35 75, 45 80" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 55 80 Q 65 75, 75 80" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 85 80 Q 95 75, 105 80" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4caf50"/>
+    </marker>
+  </defs>
+</svg>

@@ -8,6 +8,7 @@ import { formatResponse } from '../utils/responseFormatter';
 import { AdvancedTimeoutManager } from '../utils/advancedTimeout';
 import { ExtensionManager } from './ExtensionManager';
 import { TabManager } from './TabManager';
+import { DnsOverHttpsManager } from '../security/DnsOverHttpsManager';
 
 export class BrowserManager {
   private browser: Browser | null = null;
@@ -18,6 +19,7 @@ export class BrowserManager {
   private timeoutManager: AdvancedTimeoutManager | null = null;
   private extensionManager: ExtensionManager | null = null;
   private tabManager: TabManager | null = null;
+  private dnsManager: DnsOverHttpsManager | null = null;
 
   constructor(options: LaunchOptions = {}) {
     this.options = {
@@ -30,12 +32,23 @@ export class BrowserManager {
       slowMo: options.slowMo ?? 0,
       devtools: options.devtools ?? false,
       extensions: options.extensions ?? [],
+      dnsOverHttps: options.dnsOverHttps,
     };
     this.browserType = this.options.browser!;
     
     // Initialize extension manager if extensions are provided
     if (this.options.extensions && this.options.extensions.length > 0) {
       this.extensionManager = new ExtensionManager();
+    }
+    
+    // Initialize DNS-over-HTTPS manager if enabled
+    if (this.options.dnsOverHttps?.enabled) {
+      this.dnsManager = new DnsOverHttpsManager({
+        provider: this.options.dnsOverHttps.provider,
+        fallbackToDNS: this.options.dnsOverHttps.fallbackToDNS,
+        cache: this.options.dnsOverHttps.cache,
+        validateDNSSEC: this.options.dnsOverHttps.validateDNSSEC,
+      });
     }
   }
 
@@ -62,6 +75,14 @@ export class BrowserManager {
       // Configure proxy settings if provided
       const launchArgs = [...(this.options.args || [])];
       let proxySettings: any = {};
+      
+      // Add DNS-over-HTTPS arguments if enabled (Chromium only)
+      if (this.dnsManager && this.browserType === 'chromium') {
+        const dohArgs = DnsOverHttpsManager.getBrowserArgs(
+          this.options.dnsOverHttps?.provider || 'cloudflare'
+        );
+        launchArgs.push(...dohArgs);
+      }
       
       if (this.options.proxy) {
         // For launch-level proxy (Chromium/Firefox)
@@ -406,6 +427,13 @@ export class BrowserManager {
    */
   getTabManager(): TabManager | null {
     return this.tabManager;
+  }
+  
+  /**
+   * Get the DNS-over-HTTPS manager
+   */
+  getDnsManager(): DnsOverHttpsManager | null {
+    return this.dnsManager;
   }
 
   /**

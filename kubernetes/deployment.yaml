@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playclone-farm
+  namespace: playclone
+  labels:
+    app: playclone
+    component: farm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: playclone
+      component: farm
+  template:
+    metadata:
+      labels:
+        app: playclone
+        component: farm
+    spec:
+      containers:
+      - name: playclone
+        image: playclone:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+        - containerPort: 9090
+          protocol: TCP
+          name: metrics
+        envFrom:
+        - configMapRef:
+            name: playclone-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/status
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: cache
+          mountPath: /app/cache
+        - name: downloads
+          mountPath: /app/downloads
+      volumes:
+      - name: cache
+        emptyDir:
+          sizeLimit: 5Gi
+      - name: downloads
+        emptyDir:
+          sizeLimit: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: playclone-worker
+  namespace: playclone
+  labels:
+    app: playclone
+    component: worker
+spec:
+  serviceName: playclone-worker
+  replicas: 5
+  selector:
+    matchLabels:
+      app: playclone
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: playclone
+        component: worker
+    spec:
+      containers:
+      - name: playclone-worker
+        image: playclone:latest
+        imagePullPolicy: Always
+        command: ["node", "worker.js"]
+        ports:
+        - containerPort: 8081
+          protocol: TCP
+          name: worker
+        envFrom:
+        - configMapRef:
+            name: playclone-config
+        env:
+        - name: WORKER_MODE
+          value: "true"
+        - name: WORKER_PORT
+          value: "8081"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "4000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        volumeMounts:
+        - name: browser-cache
+          mountPath: /home/pwuser/.cache
+        - name: browser-data
+          mountPath: /app/browser-data
+  volumeClaimTemplates:
+  - metadata:
+      name: browser-cache
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: browser-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 20Gi

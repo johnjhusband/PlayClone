@@ -1,0 +1,270 @@
+# PlayClone Docker Compose Configuration for Production
+# Optimized for production deployment with high availability
+version: '3.8'
+
+services:
+  # Load balancer
+  traefik:
+    image: traefik:v2.10
+    container_name: playclone-lb
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ADMIN_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--metrics.prometheus=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - prod-network
+    restart: always
+
+  # PlayClone API service (multiple instances)
+  playclone:
+    image: ${DOCKER_REGISTRY}/playclone:${VERSION:-latest}
+    environment:
+      - NODE_ENV=production
+      - PLAYCLONE_HEADLESS=true
+      - PLAYCLONE_BROWSER=chromium
+      - PLAYCLONE_MAX_SESSIONS=50
+      - PLAYCLONE_SESSION_TIMEOUT=600000
+      - PLAYCLONE_DEBUG=false
+      - REDIS_URL=redis://redis-master:6379
+      - REDIS_SENTINEL_URLS=redis://redis-sentinel-1:26379,redis://redis-sentinel-2:26379,redis://redis-sentinel-3:26379
+      - LOG_LEVEL=info
+      - ENABLE_METRICS=true
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY=${API_KEY}
+    volumes:
+      - playclone-data:/app/data
+      - playclone-logs:/app/logs
+    networks:
+      - prod-network
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.playclone.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.playclone.entrypoints=websecure"
+      - "traefik.http.routers.playclone.tls.certresolver=letsencrypt"
+      - "traefik.http.services.playclone.loadbalancer.server.port=3000"
+      - "traefik.http.services.playclone.loadbalancer.sticky=true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Browser farm nodes
+  browser-node:
+    image: ${DOCKER_REGISTRY}/playclone-browser:${VERSION:-latest}
+    environment:
+      - NODE_ENV=production
+      - NODE_TYPE=browser
+      - BROWSER_TYPE=chromium
+      - MAX_BROWSERS=10
+      - MAX_PAGES_PER_BROWSER=20
+      - BROWSER_TIMEOUT=120000
+      - REDIS_URL=redis://redis-master:6379
+      - METRICS_PORT=9091
+    volumes:
+      - browser-data:/app/data
+    networks:
+      - prod-network
+    deploy:
+      replicas: 5
+      placement:
+        constraints:
+          - node.labels.browser == true
+      update_config:
+        parallelism: 1
+        delay: 20s
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '8'
+          memory: 8G
+        reservations:
+          cpus: '4'
+          memory: 4G
+
+  # Redis master
+  redis-master:
+    image: redis:7-alpine
+    container_name: playclone-redis-master
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/master.conf:/usr/local/etc/redis/redis.conf
+      - redis-master-data:/data
+    networks:
+      - prod-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Redis replicas
+  redis-replica:
+    image: redis:7-alpine
+    command: redis-server --replicaof redis-master 6379
+    volumes:
+      - redis-replica-data:/data
+    networks:
+      - prod-network
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    restart: always
+
+  # Redis Sentinel for HA
+  redis-sentinel:
+    image: redis:7-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    networks:
+      - prod-network
+    deploy:
+      replicas: 3
+      placement:
+        max_replicas_per_node: 1
+    restart: always
+
+  # Monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: playclone-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus-prod.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - prod-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: playclone-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_INSTALL_PLUGINS=redis-datasource,redis-app
+      - GF_SERVER_ROOT_URL=https://${DOMAIN}/grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - prod-network
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${DOMAIN}`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+
+  # Logging
+  loki:
+    image: grafana/loki:latest
+    container_name: playclone-loki
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    networks:
+      - prod-network
+    restart: always
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+    networks:
+      - prod-network
+    restart: always
+    command: -config.file=/etc/promtail/config.yml
+
+  # Backup service
+  backup:
+    image: ${DOCKER_REGISTRY}/playclone-backup:${VERSION:-latest}
+    environment:
+      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 2 * * *}
+      - S3_BUCKET=${S3_BACKUP_BUCKET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - REDIS_URL=redis://redis-master:6379
+    volumes:
+      - playclone-data:/data/playclone:ro
+      - redis-master-data:/data/redis:ro
+    networks:
+      - prod-network
+    restart: always
+
+networks:
+  prod-network:
+    driver: overlay
+    attachable: true
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+
+volumes:
+  playclone-data:
+    driver: local
+  playclone-logs:
+    driver: local
+  browser-data:
+    driver: local
+  redis-master-data:
+    driver: local
+  redis-replica-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  loki-data:
+    driver: local
+  letsencrypt:
+    driver: local

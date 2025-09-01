@@ -1,0 +1,173 @@
+# PlayClone Docker Compose Configuration
+# Default configuration for local development
+version: '3.8'
+
+services:
+  # PlayClone main service
+  playclone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: playclone:latest
+    container_name: playclone-dev
+    ports:
+      - "3000:3000"  # Main API port
+      - "3001:3001"  # WebSocket port for live preview
+      - "4000:4000"  # GraphQL port
+      - "5000:5000"  # REST API port
+      - "9222:9222"  # Chrome DevTools Protocol port
+    environment:
+      - NODE_ENV=development
+      - PLAYCLONE_HEADLESS=true
+      - PLAYCLONE_BROWSER=chromium
+      - PLAYCLONE_MAX_SESSIONS=10
+      - PLAYCLONE_SESSION_TIMEOUT=300000
+      - PLAYCLONE_DEBUG=true
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./src:/app/src
+      - ./dist:/app/dist
+      - ./tests:/app/tests
+      - playclone-sessions:/app/sessions
+      - playclone-downloads:/app/downloads
+      - playclone-screenshots:/app/screenshots
+    depends_on:
+      - redis
+      - browser-pool
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis for session storage and caching
+  redis:
+    image: redis:7-alpine
+    container_name: playclone-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Browser pool service for distributed execution
+  browser-pool:
+    build:
+      context: .
+      dockerfile: Dockerfile.browserPool
+    image: playclone-browser-pool:latest
+    container_name: playclone-browser-pool
+    environment:
+      - NODE_ENV=production
+      - POOL_SIZE=5
+      - BROWSER_TYPE=chromium
+      - MAX_PAGES_PER_BROWSER=10
+      - BROWSER_TIMEOUT=60000
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - browser-pool-data:/app/data
+    depends_on:
+      - redis
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # Monitoring service (optional)
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: playclone-monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana for visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: playclone-grafana
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - monitoring
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: playclone-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - nginx-cache:/var/cache/nginx
+    depends_on:
+      - playclone
+    networks:
+      - playclone-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+networks:
+  playclone-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  playclone-sessions:
+    driver: local
+  playclone-downloads:
+    driver: local
+  playclone-screenshots:
+    driver: local
+  redis-data:
+    driver: local
+  browser-pool-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  nginx-cache:
+    driver: local

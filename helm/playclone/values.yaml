@@ -1,0 +1,138 @@
+# Default values for playclone.
+
+replicaCount:
+  farm: 3
+  worker: 5
+
+image:
+  repository: playclone
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8080
+  metricsPort: 9090
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/websocket-services: "playclone-farm"
+  hosts:
+    - host: playclone.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: playclone-tls
+      hosts:
+        - playclone.example.com
+
+resources:
+  farm:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  worker:
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+
+autoscaling:
+  enabled: true
+  farm:
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  worker:
+    minReplicas: 5
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 75
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - playclone
+        topologyKey: kubernetes.io/hostname
+
+persistence:
+  enabled: true
+  storageClass: ""
+  cache:
+    size: 10Gi
+  data:
+    size: 20Gi
+
+config:
+  port: 8080
+  workerPort: 8081
+  maxSessionsPerWorker: 10
+  healthCheckInterval: 30000
+  sessionTimeout: 300000
+  loadBalancingStrategy: least-connections
+  authentication:
+    type: token
+    secret: "change-me-in-production"
+  logLevel: info
+  headless: true
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    path: /metrics
+
+redis:
+  enabled: false
+  architecture: standalone
+  auth:
+    enabled: true
+    password: "redis-password"

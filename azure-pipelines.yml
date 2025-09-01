@@ -1,0 +1,407 @@
+# Azure DevOps Pipeline for PlayClone
+# Multi-stage pipeline with comprehensive testing and deployment
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - release/*
+  tags:
+    include:
+      - v*
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+
+variables:
+  - group: playclone-secrets
+  - name: nodeVersion
+    value: '20.x'
+  - name: dockerRegistry
+    value: 'playclone.azurecr.io'
+  - name: imageName
+    value: 'playclone'
+  - name: vmImage
+    value: 'ubuntu-latest'
+
+stages:
+  - stage: Prepare
+    displayName: 'Prepare Environment'
+    jobs:
+      - job: Setup
+        displayName: 'Setup Dependencies'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: NodeTool@0
+            displayName: 'Install Node.js'
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          - task: Cache@2
+            displayName: 'Cache npm packages'
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(Pipeline.Workspace)/.npm
+
+          - script: |
+              npm ci --cache $(Pipeline.Workspace)/.npm
+              npx playwright install-deps
+              npx playwright install chromium firefox webkit
+            displayName: 'Install dependencies'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Save node_modules'
+            inputs:
+              targetPath: 'node_modules'
+              artifact: 'node_modules'
+
+  - stage: Validate
+    displayName: 'Code Validation'
+    dependsOn: Prepare
+    jobs:
+      - job: Lint
+        displayName: 'Lint Code'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm run lint
+            displayName: 'Run ESLint'
+
+          - task: PublishCodeCoverageResults@1
+            condition: always()
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: 'coverage/cobertura-coverage.xml'
+
+      - job: TypeCheck
+        displayName: 'Type Checking'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm run typecheck
+            displayName: 'Run TypeScript compiler'
+
+      - job: SecurityAudit
+        displayName: 'Security Audit'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm audit --audit-level=high
+            displayName: 'NPM Security Audit'
+            continueOnError: true
+
+          - task: WhiteSource@21
+            displayName: 'WhiteSource Security Scan'
+            inputs:
+              cwd: '$(System.DefaultWorkingDirectory)'
+              projectName: 'PlayClone'
+
+  - stage: Test
+    displayName: 'Testing'
+    dependsOn: Validate
+    jobs:
+      - job: UnitTests
+        displayName: 'Unit Tests'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm run test:unit -- --coverage
+            displayName: 'Run unit tests'
+
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/test-results/junit.xml'
+              testRunTitle: 'Unit Tests'
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: 'coverage/cobertura-coverage.xml'
+              reportDirectory: 'coverage'
+
+      - job: IntegrationTests
+        displayName: 'Integration Tests'
+        pool:
+          vmImage: $(vmImage)
+        services:
+          redis: redis:7-alpine
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: |
+              export REDIS_URL=redis://localhost:6379
+              npm run test:integration
+            displayName: 'Run integration tests'
+
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/test-results/junit.xml'
+              testRunTitle: 'Integration Tests'
+
+      - job: BrowserTests
+        displayName: 'Browser Compatibility Tests'
+        strategy:
+          matrix:
+            Chromium:
+              browser: 'chromium'
+            Firefox:
+              browser: 'firefox'
+            WebKit:
+              browser: 'webkit'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm run test:browser -- --browser=$(browser)
+            displayName: 'Test $(browser)'
+
+          - task: PublishPipelineArtifact@1
+            condition: always()
+            inputs:
+              targetPath: 'test-results/$(browser)'
+              artifact: 'test-results-$(browser)'
+
+      - job: PerformanceTests
+        displayName: 'Performance Tests'
+        condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: npm run test:performance
+            displayName: 'Run performance tests'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'performance-results'
+              artifact: 'performance-results'
+
+  - stage: Build
+    displayName: 'Build Application'
+    dependsOn: Test
+    jobs:
+      - job: BuildApp
+        displayName: 'Build TypeScript'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'node_modules'
+              path: 'node_modules'
+
+          - script: |
+              npm run build
+              npm pack
+            displayName: 'Build application'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'dist'
+              artifact: 'dist'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'playclone-*.tgz'
+              artifact: 'npm-package'
+
+      - job: BuildDocker
+        displayName: 'Build Docker Image'
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'dist'
+              path: 'dist'
+
+          - task: Docker@2
+            displayName: 'Build Docker image'
+            inputs:
+              containerRegistry: 'ACR-Connection'
+              repository: $(imageName)
+              command: 'build'
+              Dockerfile: 'Dockerfile'
+              tags: |
+                $(Build.BuildId)
+                $(Build.SourceBranchName)
+                latest
+
+          - task: Docker@2
+            displayName: 'Push Docker image'
+            inputs:
+              containerRegistry: 'ACR-Connection'
+              repository: $(imageName)
+              command: 'push'
+              tags: |
+                $(Build.BuildId)
+                $(Build.SourceBranchName)
+                latest
+
+          - task: AzureContainerAppsRC@0
+            displayName: 'Scan container image'
+            inputs:
+              azureSubscription: 'Azure-Subscription'
+              acrName: 'playclone'
+              imageName: '$(imageName):$(Build.BuildId)'
+
+  - stage: Deploy_Staging
+    displayName: 'Deploy to Staging'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    jobs:
+      - deployment: DeployStaging
+        displayName: 'Deploy to Staging Environment'
+        environment: 'staging'
+        pool:
+          vmImage: $(vmImage)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebAppContainer@1
+                  displayName: 'Deploy to Azure Container Instance'
+                  inputs:
+                    azureSubscription: 'Azure-Subscription'
+                    appName: 'playclone-staging'
+                    containers: '$(dockerRegistry)/$(imageName):$(Build.BuildId)'
+
+                - task: AzureAppServiceManage@0
+                  displayName: 'Start staging slot'
+                  inputs:
+                    azureSubscription: 'Azure-Subscription'
+                    action: 'Start Azure App Service'
+                    webAppName: 'playclone-staging'
+
+                - script: |
+                    curl -f https://staging.playclone.example.com/health || exit 1
+                  displayName: 'Health check'
+
+  - stage: Deploy_Production
+    displayName: 'Deploy to Production'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployProduction
+        displayName: 'Deploy to Production Environment'
+        environment: 'production'
+        pool:
+          vmImage: $(vmImage)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureKeyVault@2
+                  displayName: 'Get secrets from Key Vault'
+                  inputs:
+                    azureSubscription: 'Azure-Subscription'
+                    keyVaultName: 'playclone-keyvault'
+                    secretsFilter: '*'
+
+                - task: AzureWebAppContainer@1
+                  displayName: 'Deploy to production slot'
+                  inputs:
+                    azureSubscription: 'Azure-Subscription'
+                    appName: 'playclone'
+                    deployToSlotOrASE: true
+                    resourceGroupName: 'playclone-rg'
+                    slotName: 'staging'
+                    containers: '$(dockerRegistry)/$(imageName):$(Build.BuildId)'
+
+                - task: AzureAppServiceManage@0
+                  displayName: 'Swap staging to production'
+                  inputs:
+                    azureSubscription: 'Azure-Subscription'
+                    action: 'Swap Slots'
+                    webAppName: 'playclone'
+                    sourceSlot: 'staging'
+                    swapWithProduction: true
+
+                - script: |
+                    curl -f https://playclone.example.com/health || exit 1
+                  displayName: 'Production health check'
+
+  - stage: Release
+    displayName: 'Release Package'
+    dependsOn: Deploy_Production
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    jobs:
+      - job: PublishNPM
+        displayName: 'Publish to NPM'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'npm-package'
+              path: '.'
+
+          - task: Npm@1
+            displayName: 'Publish to NPM registry'
+            inputs:
+              command: 'publish'
+              publishRegistry: 'useExternalRegistry'
+              publishEndpoint: 'NPM-Registry'
+
+      - job: CreateGitHubRelease
+        displayName: 'Create GitHub Release'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: GitHubRelease@1
+            displayName: 'Create GitHub release'
+            inputs:
+              gitHubConnection: 'GitHub-Connection'
+              repositoryName: 'playclone/playclone'
+              action: 'create'
+              target: '$(Build.SourceVersion)'
+              tagSource: 'gitTag'
+              releaseNotesSource: 'filePath'
+              releaseNotesFilePath: 'CHANGELOG.md'
+              assets: |
+                $(Pipeline.Workspace)/npm-package/*.tgz
+                $(Pipeline.Workspace)/dist/**/*
+              isPreRelease: false

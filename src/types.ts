@@ -27,6 +27,14 @@ export interface ExtensionConfig {
   permissions?: string[]; // Additional permissions to grant
 }
 
+export interface DnsOverHttpsConfig {
+  enabled?: boolean;
+  provider?: 'cloudflare' | 'google' | 'quad9' | 'nextdns' | 'adguard' | 'opendns';
+  fallbackToDNS?: boolean;
+  cache?: boolean;
+  validateDNSSEC?: boolean;
+}
+
 export interface LaunchOptions {
   headless?: boolean;
   viewport?: Viewport;
@@ -39,6 +47,7 @@ export interface LaunchOptions {
   devtools?: boolean;
   proxy?: ProxyConfig;
   extensions?: ExtensionConfig[]; // Browser extensions to load
+  dnsOverHttps?: DnsOverHttpsConfig; // DNS-over-HTTPS configuration
 }
 
 export interface ElementSelector {

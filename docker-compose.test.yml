@@ -1,0 +1,130 @@
+# PlayClone Docker Compose Configuration for Testing
+# Optimized for running test suites in isolation
+version: '3.8'
+
+services:
+  # Test runner service
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      args:
+        - NODE_ENV=test
+    image: playclone-test:latest
+    container_name: playclone-test-runner
+    environment:
+      - NODE_ENV=test
+      - PLAYCLONE_HEADLESS=true
+      - PLAYCLONE_BROWSER=chromium
+      - TEST_TIMEOUT=120000
+      - PARALLEL_TESTS=true
+      - MAX_WORKERS=4
+      - COVERAGE=true
+      - REDIS_URL=redis://redis-test:6379
+    volumes:
+      - ./src:/app/src:ro
+      - ./tests:/app/tests:ro
+      - ./coverage:/app/coverage
+      - test-results:/app/test-results
+    depends_on:
+      redis-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: npm test -- --coverage --maxWorkers=4
+
+  # Redis for test session storage
+  redis-test:
+    image: redis:7-alpine
+    container_name: playclone-redis-test
+    networks:
+      - test-network
+    command: redis-server --port 6379 --save ""
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Integration test browsers
+  chromium-test:
+    image: mcr.microsoft.com/playwright:v1.40.0-focal
+    container_name: playclone-chromium-test
+    environment:
+      - BROWSER=chromium
+    networks:
+      - test-network
+    volumes:
+      - ./tests/integration:/tests
+    profiles:
+      - integration
+
+  firefox-test:
+    image: mcr.microsoft.com/playwright:v1.40.0-focal
+    container_name: playclone-firefox-test
+    environment:
+      - BROWSER=firefox
+    networks:
+      - test-network
+    volumes:
+      - ./tests/integration:/tests
+    profiles:
+      - integration
+
+  webkit-test:
+    image: mcr.microsoft.com/playwright:v1.40.0-focal
+    container_name: playclone-webkit-test
+    environment:
+      - BROWSER=webkit
+    networks:
+      - test-network
+    volumes:
+      - ./tests/integration:/tests
+    profiles:
+      - integration
+
+  # Performance test service
+  performance-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: playclone:latest
+    container_name: playclone-performance-test
+    environment:
+      - NODE_ENV=test
+      - PERFORMANCE_TEST=true
+      - LOAD_TEST_USERS=100
+      - LOAD_TEST_DURATION=300
+    volumes:
+      - ./tests/performance:/app/tests/performance
+      - performance-results:/app/performance-results
+    networks:
+      - test-network
+    profiles:
+      - performance
+    command: npm run test:performance
+
+  # Security scanning
+  security-scanner:
+    image: aquasec/trivy:latest
+    container_name: playclone-security-scanner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./security-reports:/reports
+    networks:
+      - test-network
+    profiles:
+      - security
+    command: image --severity HIGH,CRITICAL --format json -o /reports/scan.json playclone:latest
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local
+  performance-results:
+    driver: local
+  coverage:
+    driver: local
