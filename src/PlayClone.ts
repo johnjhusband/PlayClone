@@ -37,6 +37,7 @@ import { CDPClient } from './devtools/CDPClient';
 import { LivePreview, LivePreviewOptions } from './devtools/LivePreview';
 import { ConsoleErrorCapture, ErrorSummary } from './devtools/ConsoleErrorCapture';
 import { DeepErrorExtractor, DeepErrorSummary } from './devtools/DeepErrorExtractor';
+import { EnhancedDevToolsConsole, DevToolsConsoleResult } from './devtools/EnhancedDevToolsConsole';
 import { TableDetector, TableData, TableDetectionResult, TableExtractionOptions } from './extraction/TableDetector';
 import { PdfGenerator, PdfGenerationOptions } from './extraction/PdfGenerator';
 import { DataValidator, ValidationRule, FieldValidation, ValidationResult, SanitizationOptions } from './data/DataValidator';
@@ -100,6 +101,7 @@ export class PlayClone {
   private livePreview: LivePreview | null = null;
   private consoleErrorCapture: ConsoleErrorCapture | null = null;
   private deepErrorExtractor: DeepErrorExtractor | null = null;
+  private enhancedDevTools: EnhancedDevToolsConsole | null = null;
   private tableDetector: TableDetector | null = null;
   private pdfGenerator: PdfGenerator | null = null;
   private dataValidator: DataValidator | null = null;
@@ -3722,6 +3724,175 @@ export class PlayClone {
       return 'Deep error extraction not initialized';
     }
     return this.deepErrorExtractor.getFormattedReport();
+  }
+
+  /**
+   * ENHANCED: Open DevTools Console with improved CDP support
+   * This method provides reliable DevTools interaction for error extraction
+   */
+  async openDevToolsConsoleEnhanced(): Promise<ActionResult> {
+    try {
+      const page = this.browserManager.getPage();
+      if (!page) {
+        return formatError(new Error('No page available'), 'openDevToolsConsoleEnhanced');
+      }
+
+      // Initialize enhanced DevTools if not already done
+      if (!this.enhancedDevTools) {
+        this.enhancedDevTools = new EnhancedDevToolsConsole();
+        await this.enhancedDevTools.initialize(page);
+      }
+
+      // Open DevTools console
+      const success = await this.enhancedDevTools.openDevToolsConsole(page);
+
+      return formatResponse({
+        success,
+        action: 'openDevToolsConsoleEnhanced',
+        value: success ? 'DevTools Console opened successfully' : 'DevTools Console opening attempted',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatError(error as Error, 'openDevToolsConsoleEnhanced');
+    }
+  }
+
+  /**
+   * ENHANCED: Copy console errors to clipboard
+   * Extracts and copies all console errors using CDP
+   */
+  async copyConsoleErrors(): Promise<ActionResult> {
+    try {
+      const page = this.browserManager.getPage();
+      if (!page) {
+        return formatError(new Error('No page available'), 'copyConsoleErrors');
+      }
+
+      // Initialize enhanced DevTools if not already done
+      if (!this.enhancedDevTools) {
+        this.enhancedDevTools = new EnhancedDevToolsConsole();
+        await this.enhancedDevTools.initialize(page);
+      }
+
+      // Copy errors to clipboard
+      const copiedText = await this.enhancedDevTools.copyConsoleErrors(page);
+
+      return formatResponse({
+        success: true,
+        action: 'copyConsoleErrors',
+        value: copiedText,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatError(error as Error, 'copyConsoleErrors');
+    }
+  }
+
+  /**
+   * ENHANCED: Select and copy from DevTools Console UI
+   * Attempts to select and copy directly from the DevTools console UI
+   */
+  async selectAndCopyFromConsole(): Promise<ActionResult> {
+    try {
+      const page = this.browserManager.getPage();
+      if (!page) {
+        return formatError(new Error('No page available'), 'selectAndCopyFromConsole');
+      }
+
+      // Initialize enhanced DevTools if not already done
+      if (!this.enhancedDevTools) {
+        this.enhancedDevTools = new EnhancedDevToolsConsole();
+        await this.enhancedDevTools.initialize(page);
+      }
+
+      // Select and copy from console UI
+      const copiedContent = await this.enhancedDevTools.selectAndCopyFromConsoleUI(page);
+
+      return formatResponse({
+        success: true,
+        action: 'selectAndCopyFromConsole',
+        value: copiedContent,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatError(error as Error, 'selectAndCopyFromConsole');
+    }
+  }
+
+  /**
+   * ENHANCED: Get DevTools console summary
+   * Returns a structured summary of all console entries
+   */
+  async getDevToolsConsoleSummary(): Promise<DevToolsConsoleResult | null> {
+    try {
+      if (!this.enhancedDevTools) {
+        const page = this.browserManager.getPage();
+        if (!page) {
+          return null;
+        }
+        this.enhancedDevTools = new EnhancedDevToolsConsole();
+        await this.enhancedDevTools.initialize(page);
+      }
+
+      return this.enhancedDevTools.getSummary();
+    } catch (error) {
+      console.error('Error getting DevTools console summary:', error);
+      return null;
+    }
+  }
+
+  /**
+   * ENHANCED: Extract all console entries with CDP
+   * Extracts complete console history using Chrome DevTools Protocol
+   */
+  async extractAllConsoleEntries(): Promise<ActionResult> {
+    try {
+      const page = this.browserManager.getPage();
+      if (!page) {
+        return formatError(new Error('No page available'), 'extractAllConsoleEntries');
+      }
+
+      // Initialize enhanced DevTools if not already done
+      if (!this.enhancedDevTools) {
+        this.enhancedDevTools = new EnhancedDevToolsConsole();
+        await this.enhancedDevTools.initialize(page);
+      }
+
+      // Extract all entries
+      const entries = await this.enhancedDevTools.extractAllConsoleEntries();
+
+      return formatResponse({
+        success: true,
+        action: 'extractAllConsoleEntries',
+        value: entries,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatError(error as Error, 'extractAllConsoleEntries');
+    }
+  }
+
+  /**
+   * ENHANCED: Clear DevTools console
+   * Clears all captured console entries
+   */
+  clearDevToolsConsole(): ActionResult {
+    try {
+      if (!this.enhancedDevTools) {
+        return formatError(new Error('Enhanced DevTools not initialized'), 'clearDevToolsConsole');
+      }
+
+      this.enhancedDevTools.clear();
+
+      return formatResponse({
+        success: true,
+        action: 'clearDevToolsConsole',
+        value: 'Console entries cleared',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      return formatError(error as Error, 'clearDevToolsConsole');
+    }
   }
 
   /**
