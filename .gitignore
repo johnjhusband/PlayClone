@@ -63,3 +63,6 @@ sessions/
 
 # State checkpoints
 checkpoints/
+
+# Build artifacts
+tsconfig.tsbuildinfo

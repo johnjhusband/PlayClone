@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Console Errors</title>
+</head>
+<body>
+    <h1>Test Page with Known Errors</h1>
+    <p>This page generates various console errors for testing</p>
+
+    <script>
+        // Error 1: Reference Error
+        console.error("ERROR 1: This is a deliberate console.error message");
+
+        // Error 2: Type Error
+        try {
+            null.someMethod();
+        } catch(e) {
+            console.error("ERROR 2: TypeError caught:", e.message);
+        }
+
+        // Error 3: Direct throw
+        setTimeout(() => {
+            throw new Error("ERROR 3: Uncaught error after 1 second");
+        }, 1000);
+
+        // Error 4: Reference to undefined variable
+        setTimeout(() => {
+            console.log(undefinedVariable);
+        }, 2000);
+
+        // Warning
+        console.warn("WARNING: This is a test warning");
+
+        // Regular log
+        console.log("INFO: Page loaded with test errors");
+
+        // Network error - try to load non-existent resource
+        fetch('/non-existent-endpoint')
+            .catch(err => console.error("ERROR 4: Network error:", err));
+    </script>
+</body>
+</html>

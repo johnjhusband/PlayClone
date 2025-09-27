@@ -15,16 +15,12 @@ async function captureKineticUraniumErrors() {
   try {
     console.log('🚀 Starting KineticUranium error capture test...');
 
-    // Launch browser
-    const launchResult = await playclone.launch();
-    if (!launchResult.success) {
-      console.error('Failed to launch browser:', launchResult.error);
-      return;
-    }
+    // Note: PlayClone initializes browser automatically on first navigation
+    // No need to call launch() explicitly
 
-    // Navigate to KineticUranium test file
-    // Using the local test-direct.html file
-    const navResult = await playclone.navigate(`file://${__dirname}/../../Kinetic Uranium/frontend/test-direct.html`);
+    // Navigate to KineticUranium web version
+    // Using the actual deployed version
+    const navResult = await playclone.navigate('https://devgame.flippi.ai');
     if (!navResult.success) {
       console.error('Failed to navigate:', navResult.error);
       return;
@@ -33,7 +29,7 @@ async function captureKineticUraniumErrors() {
     console.log('📍 Navigated to KineticUranium');
 
     // Wait for page to load
-    await playclone.wait(2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Method 1: Start enhanced error capture before any errors occur
     console.log('🎯 Starting enhanced error capture...');
@@ -46,7 +42,7 @@ async function captureKineticUraniumErrors() {
     console.log('DevTools opened:', devToolsResult.value);
 
     // Wait a moment for DevTools to fully open
-    await playclone.wait(1500);
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Method 3: Extract all console entries using CDP
     console.log('📊 Extracting all console entries...');
@@ -134,7 +130,7 @@ async function captureKineticUraniumErrors() {
 
     // Keep browser open for manual inspection
     console.log('\\n🔎 Browser will stay open for 10 seconds for manual inspection...');
-    await playclone.wait(10000);
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
   } catch (error) {
     console.error('Test failed:', error);
@@ -155,9 +151,6 @@ async function captureWithDeepExtraction() {
   try {
     console.log('🚀 Starting deep error extraction test...');
 
-    // Launch browser
-    await playclone.launch();
-
     // IMPORTANT: Start deep error extraction BEFORE navigation
     // This captures compilation errors and page load errors
     console.log('🔬 Starting deep error extraction BEFORE navigation...');
@@ -165,10 +158,10 @@ async function captureWithDeepExtraction() {
 
     // Now navigate to the page
     console.log('📍 Navigating to KineticUranium...');
-    await playclone.navigate(`file://${__dirname}/../../Kinetic Uranium/frontend/test-direct.html`);
+    await playclone.navigate('https://devgame.flippi.ai');
 
     // Wait for page to fully load
-    await playclone.wait(3000);
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     // Open enhanced DevTools console
     await playclone.openDevToolsConsoleEnhanced();
@@ -213,7 +206,7 @@ async function captureWithDeepExtraction() {
     console.log('\\n📋 All errors copied to clipboard!');
 
     // Keep open for inspection
-    await playclone.wait(10000);
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
   } finally {
     await playclone.close();
