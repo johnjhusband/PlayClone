@@ -12,9 +12,17 @@ export enum LogLevel {
 export class Logger {
   private context: string;
   private static level: LogLevel = LogLevel.INFO;
+  private static instance: Logger;
 
-  constructor(context: string) {
+  constructor(context: string = 'PlayClone') {
     this.context = context;
+  }
+
+  static getInstance(context: string = 'PlayClone'): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger(context);
+    }
+    return Logger.instance;
   }
 
   static setLevel(level: LogLevel): void {

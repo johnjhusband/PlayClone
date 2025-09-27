@@ -97,11 +97,17 @@ export {
 export { CredentialManager } from './security/CredentialManager';
 export { AuditLogger, AuditEventType, AuditSeverity } from './security/AuditLogger';
 
+// Export Claude Computer Use integration
+export { ClaudeComputerUseIntegration } from './ai/claude/ClaudeComputerUseIntegration';
+
 // Export distributed browser farm
 export { BrowserFarm } from './farm/BrowserFarm';
 export { BrowserFarmClient } from './farm/BrowserFarmClient';
+export { DistributedBrowserFarm, DistributedBrowserFarmClient } from './farm/DistributedBrowserFarm';
+export { LocalBrowserFarmTester } from './farm/LocalBrowserFarmTester';
 export type { BrowserWorker, WorkerSession, WorkerMetrics, FarmConfig, WorkerConfig } from './farm/BrowserFarm';
 export type { FarmClientConfig, SessionOptions } from './farm/BrowserFarmClient';
+export type { LocalNodeConfig, LocalTestConfig } from './farm/LocalBrowserFarmTester';
 
 export type {
   PlayClonePlugin,
@@ -184,3 +190,68 @@ export {
 
 export { WorkflowBuilder } from './orchestration/WorkflowBuilder';
 export { WorkflowTemplates } from './orchestration/WorkflowTemplates';
+
+// Export GPT-4 Vision Integration
+export {
+  GPT4VisionIntegration,
+  type GPT4VisionConfig,
+  type VisualElement,
+  type VisualAnalysisResult
+} from './ai/vision/GPT4VisionIntegration';
+
+// Export Enterprise Authentication
+export {
+  SAMLAuthProvider,
+  type SAMLConfig,
+  type SAMLAssertion,
+  type SAMLUser
+} from './enterprise/auth/SAMLAuthProvider';
+
+export {
+  SSOProvider,
+  type OAuthConfig,
+  type OIDCConfig,
+  type SSOUser,
+  type AuthorizationRequest
+} from './enterprise/auth/SSOProvider';
+
+export {
+  AuthMiddleware,
+  type AuthConfig,
+  type AuthSession,
+  type AuthProvider,
+  type AuthUser,
+  type LocalUser
+} from './enterprise/auth/AuthMiddleware';
+
+export {
+  EnterpriseSessionManager,
+  type EnterpriseConfig,
+  type Role,
+  type Permission,
+  type RBACConfig,
+  type SessionLimit,
+  type AuditLog
+} from './enterprise/auth/EnterpriseSessionManager';
+
+export {
+  VisualDebugger,
+  type DebugAnnotation,
+  type VisualDebugConfig,
+  type DebugSnapshot
+} from './ai/vision/VisualDebugger';
+
+export {
+  VisualRegressionTester,
+  type RegressionTestConfig,
+  type TestResult,
+  type RegressionReport
+} from './ai/vision/VisualRegressionTester';
+
+// Export WebAssembly Performance Modules
+export { WasmPerformanceModule } from './optimization/WasmPerformanceModule';
+export { WasmIntegration } from './optimization/WasmIntegration';
+
+// Export Ultra-Fast Startup
+export { UltraFastStartup } from './optimization/UltraFastStartup';
+export { UltraFastStartupV2 } from './optimization/UltraFastStartupV2';
